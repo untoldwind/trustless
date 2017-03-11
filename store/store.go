@@ -10,8 +10,8 @@ import (
 )
 
 type Store interface {
-	GetRing(ringType model.RingType) ([]byte, error)
-	StoreRing(ringType model.RingType, raw []byte) error
+	GetRing() ([]byte, error)
+	StoreRing(raw []byte) error
 
 	Heads() ([]model.Head, error)
 	GetHead(nodeID string) (string, error)

@@ -1,5 +1,5 @@
 hash: ea300d07d3f2774144b2481d44a0434957ed76ff7b28b844122a8fce27f8a76e
-updated: 2017-03-11T09:39:52.513786176+01:00
+updated: 2017-03-11T14:07:25.400692777+01:00
 imports:
 - name: github.com/fatih/color
   version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
@@ -16,7 +16,13 @@ imports:
 - name: golang.org/x/crypto
   version: 728b753d0135da6801d45a38e6f43ff55779c5c2
   subpackages:
+  - cast5
   - openpgp
+  - openpgp/armor
+  - openpgp/elgamal
+  - openpgp/errors
+  - openpgp/packet
+  - openpgp/s2k
   - pbkdf2
 - name: golang.org/x/sys
   version: 99f16d856c9836c42d24e7ab64ea72916925fa97
@@ -27,5 +33,16 @@ imports:
 - name: gopkg.in/yaml.v2
   version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
 - name: github.com/stretchr/testify
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  subpackages:
+  - assert
+  - require

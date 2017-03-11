@@ -25,7 +25,22 @@ func TestStore(t *testing.T) {
 }
 
 func commonRingFeatures(t *testing.T, store store.Store) {
+	require := require.New(t)
 
+	initialRing, err := store.GetRing()
+	require.Nil(err)
+	require.Nil(initialRing)
+
+	expectedRing := make([]byte, 8192)
+	_, err = rand.Read(expectedRing)
+	require.Nil(err)
+
+	err = store.StoreRing(expectedRing)
+	require.Nil(err)
+
+	actualRing, err := store.GetRing()
+	require.Nil(err)
+	require.Equal(expectedRing, actualRing)
 }
 
 func commonFeatures(t *testing.T, store store.Store) {

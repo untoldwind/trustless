@@ -15,6 +15,10 @@ func (s *LocaldirStore) Commit(nodeID string, changes []model.Change) (string, e
 	if err != nil {
 		return "", err
 	}
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	commit := model.Commit{
 		NodeID:       nodeID,
 		PrevCommitID: head,

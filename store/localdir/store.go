@@ -5,12 +5,14 @@ import (
 	"encoding/hex"
 	"net/url"
 	"os"
+	"sync"
 
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
 )
 
 type LocaldirStore struct {
+	lock    sync.Mutex
 	baseDir string
 	logger  logging.Logger
 }
@@ -22,7 +24,7 @@ func NewLocaldirStore(dirUrl *url.URL, logger logging.Logger) (*LocaldirStore, e
 	}
 	return &LocaldirStore{
 		baseDir: baseDir,
-		logger:  logger.WithField("package", "localdir"),
+		logger:  logger.WithField("package", "store/localdir"),
 	}, nil
 }
 

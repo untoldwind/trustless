@@ -10,6 +10,9 @@ import (
 )
 
 func (s *LocaldirStore) Heads() ([]model.Head, error) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	headsDir := filepath.Join(s.baseDir, "heads")
 	files, err := ioutil.ReadDir(headsDir)
 	if os.IsNotExist(err) {
@@ -37,6 +40,9 @@ func (s *LocaldirStore) Heads() ([]model.Head, error) {
 }
 
 func (s *LocaldirStore) GetHead(nodeID string) (string, error) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	headFile, err := s.headFileName(nodeID)
 	if err != nil {
 		return "", err
