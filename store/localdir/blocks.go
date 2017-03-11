@@ -1,0 +1,50 @@
+package localdir
+
+import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
+	"github.com/pkg/errors"
+)
+
+func (s *LocaldirStore) AddBlock(block []byte) (string, error) {
+	blockID, err := generateID(block)
+	if err != nil {
+		return "", err
+	}
+	blockFile, err := s.blockFileName(blockID)
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(filepath.Dir(blockFile), 0700); err != nil {
+		return "", errors.Wrap(err, "Create block directory failed")
+	}
+	if err := ioutil.WriteFile(blockFile, block, 0600); err != nil {
+		return "", errors.Wrap(err, "Writing blockfile failed")
+	}
+
+	return blockID, nil
+}
+
+func (s *LocaldirStore) GetBlock(blockID string) ([]byte, error) {
+	blockFile, err := s.blockFileName(blockID)
+	if err != nil {
+		return nil, err
+	}
+	block, err := ioutil.ReadFile(blockFile)
+	if os.IsNotExist(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, errors.Wrap(err, "Read block file failed")
+	}
+	return block, nil
+}
+
+func (s *LocaldirStore) blockFileName(blockID string) (string, error) {
+	if len(blockID) < 3 {
+		return "", errors.New("BlockID too short")
+	}
+
+	return filepath.Join(s.baseDir, "blocks", blockID[0:2], blockID), nil
+}

@@ -1,0 +1,19 @@
+package: github.com/untoldwind/trustless
+import:
+- package: github.com/leanovate/microtools
+- package: gopkg.in/urfave/cli.v2
+- package: gopkg.in/yaml.v2
+- package: golang.org/x/crypto
+  subpackages:
+  - pbkdf2
+  - openpgp
+- package: github.com/fatih/color
+  version: ^1.4.1
+- package: github.com/shibukawa/configdir
+- package: github.com/Sirupsen/logrus
+  version: ^0.11.4
+- package: github.com/pkg/errors
+  version: ^0.8.0
+testImport:
+- package: github.com/stretchr/testify
+  version: ^1.1.4

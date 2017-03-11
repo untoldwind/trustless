@@ -1,0 +1,14 @@
+package: github.com/leanovate/microtools
+import:
+- package: github.com/Sirupsen/logrus
+  version: ^0.11.0
+- package: github.com/pkg/errors
+  version: ^0.8.0
+testImport:
+- package: github.com/golang/mock
+  subpackages:
+  - gomock
+- package: github.com/smartystreets/goconvey
+  version: ^1.6.2
+  subpackages:
+  - convey

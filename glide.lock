@@ -1,0 +1,31 @@
+hash: ea300d07d3f2774144b2481d44a0434957ed76ff7b28b844122a8fce27f8a76e
+updated: 2017-03-11T09:39:52.513786176+01:00
+imports:
+- name: github.com/fatih/color
+  version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
+- name: github.com/leanovate/microtools
+  version: 9b11166081e9e39dff424a642a77ac706eca0f97
+  subpackages:
+  - logging
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
+- name: github.com/shibukawa/configdir
+  version: f5173a2c50e0358987cec35dfca337496f88f8bf
+- name: github.com/Sirupsen/logrus
+  version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
+- name: golang.org/x/crypto
+  version: 728b753d0135da6801d45a38e6f43ff55779c5c2
+  subpackages:
+  - openpgp
+  - pbkdf2
+- name: golang.org/x/sys
+  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  subpackages:
+  - unix
+- name: gopkg.in/urfave/cli.v2
+  version: 04b2f4ff79cf1fd71e138bafc67df8bbdb5b81c2
+- name: gopkg.in/yaml.v2
+  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
+testImports:
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
