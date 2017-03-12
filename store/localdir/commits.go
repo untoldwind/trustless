@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/store/model"
@@ -22,6 +23,7 @@ func (s *LocaldirStore) Commit(nodeID string, changes []model.Change) (string, e
 	commit := model.Commit{
 		NodeID:       nodeID,
 		PrevCommitID: head,
+		Timestamp:    time.Now(),
 		Changes:      changes,
 	}
 	raw, err := json.Marshal(&commit)

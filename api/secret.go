@@ -12,8 +12,14 @@ const (
 	SecretTypeLicence SecretType = "licence"
 )
 
+type SecretCurrent struct {
+	ID      string        `json:"id"`
+	Type    SecretType    `json:"type"`
+	Current SecretVersion `json:"current"`
+}
+
 // Secret holds all information of a secret
 type Secret struct {
-	Type       SecretType        `json:"type"`
-	Properties map[string]string `json:"properties"`
+	SecretCurrent
+	Version SecretVersions `json:"versions"`
 }

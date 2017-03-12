@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type ChangeOp string
 
 const (
@@ -13,7 +15,8 @@ type Change struct {
 }
 
 type Commit struct {
-	NodeID       string   `json:"node"`
-	PrevCommitID string   `json:"prev,omitempty"`
-	Changes      []Change `json:"changes"`
+	NodeID       string    `json:"node"`
+	PrevCommitID string    `json:"prev,omitempty"`
+	Timestamp    time.Time `json:"timestamp"`
+	Changes      []Change  `json:"changes"`
 }
