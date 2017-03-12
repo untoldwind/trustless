@@ -551,28 +551,6 @@ func (sa *SockaddrALG) sockaddr() (unsafe.Pointer, _Socklen, error) {
 	return unsafe.Pointer(&sa.raw), SizeofSockaddrALG, nil
 }
 
-// SockaddrVM implements the Sockaddr interface for AF_VSOCK type sockets.
-// SockaddrVM provides access to Linux VM sockets: a mechanism that enables
-// bidirectional communication between a hypervisor and its guest virtual
-// machines.
-type SockaddrVM struct {
-	// CID and Port specify a context ID and port address for a VM socket.
-	// Guests have a unique CID, and hosts may have a well-known CID of:
-	//  - VMADDR_CID_HYPERVISOR: refers to the hypervisor process.
-	//  - VMADDR_CID_HOST: refers to other processes on the host.
-	CID  uint32
-	Port uint32
-	raw  RawSockaddrVM
-}
-
-func (sa *SockaddrVM) sockaddr() (unsafe.Pointer, _Socklen, error) {
-	sa.raw.Family = AF_VSOCK
-	sa.raw.Port = sa.Port
-	sa.raw.Cid = sa.CID
-
-	return unsafe.Pointer(&sa.raw), SizeofSockaddrVM, nil
-}
-
 func anyToSockaddr(rsa *RawSockaddrAny) (Sockaddr, error) {
 	switch rsa.Addr.Family {
 	case AF_NETLINK:
@@ -640,14 +618,6 @@ func anyToSockaddr(rsa *RawSockaddrAny) (Sockaddr, error) {
 		sa.ZoneId = pp.Scope_id
 		for i := 0; i < len(sa.Addr); i++ {
 			sa.Addr[i] = pp.Addr[i]
-		}
-		return sa, nil
-
-	case AF_VSOCK:
-		pp := (*RawSockaddrVM)(unsafe.Pointer(rsa))
-		sa := &SockaddrVM{
-			CID:  pp.Cid,
-			Port: pp.Port,
 		}
 		return sa, nil
 	}
@@ -1068,7 +1038,6 @@ func Getpgrp() (pid int) {
 //sysnb	Getpid() (pid int)
 //sysnb	Getppid() (ppid int)
 //sys	Getpriority(which int, who int) (prio int, err error)
-//sys	Getrandom(buf []byte, flags int) (n int, err error)
 //sysnb	Getrusage(who int, rusage *Rusage) (err error)
 //sysnb	Getsid(pid int) (sid int, err error)
 //sysnb	Gettid() (tid int)
@@ -1148,25 +1117,6 @@ func Munmap(b []byte) (err error) {
 //sys	Munlock(b []byte) (err error)
 //sys	Mlockall(flags int) (err error)
 //sys	Munlockall() (err error)
-
-// Vmsplice splices user pages from a slice of Iovecs into a pipe specified by fd,
-// using the specified flags.
-func Vmsplice(fd int, iovs []Iovec, flags int) (int, error) {
-	n, _, errno := Syscall6(
-		SYS_VMSPLICE,
-		uintptr(fd),
-		uintptr(unsafe.Pointer(&iovs[0])),
-		uintptr(len(iovs)),
-		uintptr(flags),
-		0,
-		0,
-	)
-	if errno != 0 {
-		return 0, syscall.Errno(errno)
-	}
-
-	return int(n), nil
-}
 
 /*
  * Unimplemented
@@ -1295,6 +1245,7 @@ func Vmsplice(fd int, iovs []Iovec, flags int) (int, error) {
 // Utimensat
 // Vfork
 // Vhangup
+// Vmsplice
 // Vserver
 // Waitid
 // _Sysctl

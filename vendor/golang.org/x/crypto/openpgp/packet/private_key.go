@@ -10,6 +10,7 @@ import (
 	"crypto/cipher"
 	"crypto/dsa"
 	"crypto/ecdsa"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
 	"io"
@@ -34,7 +35,19 @@ type PrivateKey struct {
 	PrivateKey    interface{} // An *{rsa|dsa|ecdsa}.PrivateKey or a crypto.Signer.
 	sha1Checksum  bool
 	iv            []byte
+	s2kSalt       []byte // s2k parameters
+	s2kMode       s2k.Mode
+	s2kConfig     s2k.Config
+	s2kType       s2kType
 }
+
+type s2kType uint8
+
+const (
+	s2kTypeNone     s2kType = 0
+	s2kTypeSHA1     s2kType = 254
+	s2kTypeChecksum s2kType = 255
+)
 
 func NewRSAPrivateKey(currentTime time.Time, priv *rsa.PrivateKey) *PrivateKey {
 	pk := new(PrivateKey)
@@ -92,24 +105,24 @@ func (pk *PrivateKey) parse(r io.Reader) (err error) {
 		return
 	}
 
-	s2kType := buf[0]
+	pk.s2kType = s2kType(buf[0])
 
-	switch s2kType {
-	case 0:
+	switch pk.s2kType {
+	case s2kTypeNone:
 		pk.s2k = nil
 		pk.Encrypted = false
-	case 254, 255:
+	case s2kTypeSHA1, s2kTypeChecksum:
 		_, err = readFull(r, buf[:])
 		if err != nil {
 			return
 		}
 		pk.cipher = CipherFunction(buf[0])
 		pk.Encrypted = true
-		pk.s2k, err = s2k.Parse(r)
+		pk.s2k, pk.s2kMode, pk.s2kConfig.Hash, pk.s2kSalt, pk.s2kConfig.S2KCount, err = s2k.ParseWithParameters(r)
 		if err != nil {
 			return
 		}
-		if s2kType == 254 {
+		if pk.s2kType == s2kTypeSHA1 {
 			pk.sha1Checksum = true
 		}
 	default:
@@ -148,17 +161,106 @@ func mod64kHash(d []byte) uint16 {
 	return h
 }
 
-func (pk *PrivateKey) Serialize(w io.Writer) (err error) {
-	// TODO(agl): support encrypted private keys
-	buf := bytes.NewBuffer(nil)
-	err = pk.PublicKey.serializeWithoutHeaders(buf)
-	if err != nil {
-		return
+func (pk *PrivateKey) serializeEncrypted(w io.Writer) error {
+	hashID, ok := s2k.HashToHashId(pk.s2kConfig.Hash)
+	if !ok {
+		return errors.UnsupportedError("no such hash algorithm")
 	}
-	buf.WriteByte(0 /* no encryption */)
+
+	encodedKeyBuf := bytes.NewBuffer(nil)
+	encodedKeyBuf.WriteByte(uint8(pk.s2kType))
+	encodedKeyBuf.WriteByte(uint8(pk.cipher))
+	encodedKeyBuf.WriteByte(uint8(pk.s2kMode))
+	encodedKeyBuf.WriteByte(hashID)
+	encodedKeyBuf.Write(pk.s2kSalt)
+	encodedKeyBuf.WriteByte(pk.s2kConfig.EncodedCount())
+
+	encodedKey := encodedKeyBuf.Bytes()
+
+	w.Write(encodedKey)
+	w.Write(pk.iv)
+	w.Write(pk.encryptedData)
+
+	return nil
+}
+
+func (pk *PrivateKey) serializeUnencrypted(w io.Writer) (err error) {
+	buf := bytes.NewBuffer(nil)
+	buf.WriteByte(uint8(s2kTypeNone))
 
 	privateKeyBuf := bytes.NewBuffer(nil)
 
+	err = pk.serializePGPPrivate(privateKeyBuf)
+	if err != nil {
+		return
+	}
+
+	privateKeyBytes := privateKeyBuf.Bytes()
+
+	_, err = w.Write([]byte{uint8(s2kTypeNone)})
+	if err != nil {
+		return
+	}
+	_, err = w.Write(privateKeyBytes)
+	if err != nil {
+		return
+	}
+	if pk.sha1Checksum {
+		hash := sha1.New()
+		_, err = hash.Write(privateKeyBytes)
+		if err != nil {
+			return
+		}
+		sum := hash.Sum(nil)
+		_, err = w.Write(sum)
+	} else {
+		checksum := mod64kHash(privateKeyBytes)
+		var checksumBytes [2]byte
+		checksumBytes[0] = byte(checksum >> 8)
+		checksumBytes[1] = byte(checksum)
+		_, err = w.Write(checksumBytes[:])
+	}
+
+	return
+}
+
+func (pk *PrivateKey) Serialize(w io.Writer) (err error) {
+	publicKeyBuf := bytes.NewBuffer(nil)
+	err = pk.PublicKey.serializeWithoutHeaders(publicKeyBuf)
+	if err != nil {
+		return
+	}
+
+	privateKeyBuf := bytes.NewBuffer(nil)
+	if pk.Encrypted {
+		err = pk.serializeEncrypted(privateKeyBuf)
+	} else {
+		err = pk.serializeUnencrypted(privateKeyBuf)
+	}
+	if err != nil {
+		return
+	}
+
+	ptype := packetTypePrivateKey
+	publicKeyBytes := publicKeyBuf.Bytes()
+	privateKeyBytes := privateKeyBuf.Bytes()
+	if pk.IsSubkey {
+		ptype = packetTypePrivateSubkey
+	}
+	err = serializeHeader(w, ptype, len(publicKeyBytes)+len(privateKeyBytes))
+	if err != nil {
+		return
+	}
+	_, err = w.Write(publicKeyBytes)
+	if err != nil {
+		return
+	}
+	_, err = w.Write(privateKeyBytes)
+
+	return
+}
+
+func (pk *PrivateKey) serializePGPPrivate(privateKeyBuf io.Writer) (err error) {
 	switch priv := pk.PrivateKey.(type) {
 	case *rsa.PrivateKey:
 		err = serializeRSAPrivateKey(privateKeyBuf, priv)
@@ -171,35 +273,6 @@ func (pk *PrivateKey) Serialize(w io.Writer) (err error) {
 	default:
 		err = errors.InvalidArgumentError("unknown private key type")
 	}
-	if err != nil {
-		return
-	}
-
-	ptype := packetTypePrivateKey
-	contents := buf.Bytes()
-	privateKeyBytes := privateKeyBuf.Bytes()
-	if pk.IsSubkey {
-		ptype = packetTypePrivateSubkey
-	}
-	err = serializeHeader(w, ptype, len(contents)+len(privateKeyBytes)+2)
-	if err != nil {
-		return
-	}
-	_, err = w.Write(contents)
-	if err != nil {
-		return
-	}
-	_, err = w.Write(privateKeyBytes)
-	if err != nil {
-		return
-	}
-
-	checksum := mod64kHash(privateKeyBytes)
-	var checksumBytes [2]byte
-	checksumBytes[0] = byte(checksum >> 8)
-	checksumBytes[1] = byte(checksum)
-	_, err = w.Write(checksumBytes[:])
-
 	return
 }
 
@@ -229,6 +302,77 @@ func serializeElGamalPrivateKey(w io.Writer, priv *elgamal.PrivateKey) error {
 
 func serializeECDSAPrivateKey(w io.Writer, priv *ecdsa.PrivateKey) error {
 	return writeBig(w, priv.D)
+}
+
+// Encrypt encrypts the private key with default parameters
+func (pk *PrivateKey) Encrypt(passphrase []byte) error {
+	return pk.EncryptWithParameters(passphrase, CipherAES128, s2k.ModeIterated, s2k.Config{
+		S2KCount: 65536,
+		Hash:     crypto.SHA1,
+	})
+}
+
+// EncryptWithParameters encrypts the private key with given parameters
+func (pk *PrivateKey) EncryptWithParameters(passphrase []byte, cipherFunc CipherFunction, s2kMode s2k.Mode, s2kConfig s2k.Config) (err error) {
+	if pk.Encrypted {
+		err = errors.InvalidArgumentError("Key already encrypted")
+		return
+	}
+
+	privateKeyBuf := bytes.NewBuffer(nil)
+	err = pk.serializePGPPrivate(privateKeyBuf)
+	if err != nil {
+		return
+	}
+	privateKeyBytes := privateKeyBuf.Bytes()
+
+	pk.cipher = cipherFunc
+	pk.s2kMode = s2kMode
+	pk.s2kConfig = s2kConfig
+
+	pk.s2kSalt = make([]byte, 8)
+	_, err = rand.Read(pk.s2kSalt)
+	if err != nil {
+		return
+	}
+	pk.s2k, err = s2k.New(pk.s2kMode, pk.s2kSalt, pk.s2kConfig)
+	if err != nil {
+		return
+	}
+
+	key := make([]byte, pk.cipher.KeySize())
+	pk.s2k(key, passphrase)
+
+	block := pk.cipher.new(key)
+	pk.iv = make([]byte, pk.cipher.blockSize())
+	_, err = rand.Read(pk.iv)
+	if err != nil {
+		return
+	}
+	cfb := cipher.NewCFBEncrypter(block, pk.iv)
+
+	if pk.sha1Checksum {
+		pk.s2kType = s2kTypeSHA1
+		h := sha1.New()
+		_, err = h.Write(privateKeyBytes)
+		if err != nil {
+			return
+		}
+		sum := h.Sum(nil)
+		privateKeyBytes = append(privateKeyBytes, sum...)
+	} else {
+		pk.s2kType = s2kTypeChecksum
+		checksum := mod64kHash(privateKeyBytes)
+		privateKeyBytes = append(privateKeyBytes, byte(checksum>>8), byte(checksum))
+	}
+
+	pk.encryptedData = make([]byte, len(privateKeyBytes))
+
+	cfb.XORKeyStream(pk.encryptedData, privateKeyBytes)
+
+	pk.Encrypted = true
+
+	return
 }
 
 // Decrypt decrypts an encrypted private key using a passphrase.

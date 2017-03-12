@@ -2,17 +2,39 @@ package commands
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
+	cli "gopkg.in/urfave/cli.v2"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/fatih/color"
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/config"
 )
+
+var boldRed = color.New(color.FgRed, color.Bold).SprintFunc()
+
+func withDetailedErrors(action cli.ActionFunc) cli.ActionFunc {
+	return func(ctx *cli.Context) error {
+		err := action(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s: %s\n", boldRed("ERROR"), err.Error())
+
+			if GlobalFlags.Debug {
+				fmt.Fprintln(os.Stderr)
+				fmt.Fprintf(os.Stderr, "%+v\n", err)
+			}
+
+			return errors.New("")
+		}
+		return nil
+	}
+}
 
 func createLogger() logging.Logger {
 	loggingOptions := logging.Options{

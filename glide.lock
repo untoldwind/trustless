@@ -1,5 +1,5 @@
-hash: ea300d07d3f2774144b2481d44a0434957ed76ff7b28b844122a8fce27f8a76e
-updated: 2017-03-11T14:07:25.400692777+01:00
+hash: f31a4be60a2b784724ccd0db4d04fe5e5f4ac2ab364489aaace8043660132a89
+updated: 2017-03-12T13:53:49.504274224+01:00
 imports:
 - name: github.com/fatih/color
   version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
@@ -7,6 +7,11 @@ imports:
   version: 9b11166081e9e39dff424a642a77ac706eca0f97
   subpackages:
   - logging
+- name: github.com/mattn/go-colorable
+  version: d228849504861217f796da67fae4f6e347643f15
+- name: github.com/mattn/go-isatty
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/shibukawa/configdir
@@ -14,7 +19,8 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: golang.org/x/crypto
-  version: 728b753d0135da6801d45a38e6f43ff55779c5c2
+  version: 6217826bd297ae6dcdc999a87063952c037bc67e
+  repo: https://github.com/untoldwind/crypto
   subpackages:
   - cast5
   - openpgp
@@ -25,7 +31,8 @@ imports:
   - openpgp/s2k
   - pbkdf2
 - name: golang.org/x/sys
-  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
+  repo: https://go.googlesource.com/sys
   subpackages:
   - unix
 - name: gopkg.in/urfave/cli.v2

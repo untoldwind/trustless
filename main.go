@@ -50,6 +50,9 @@ func main() {
 				Destination: &commands.GlobalFlags.ConfigFile,
 			},
 		},
+		Commands: []*cli.Command{
+			commands.DaemonCommang,
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {

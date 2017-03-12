@@ -3,7 +3,6 @@ package secrets
 import (
 	"bytes"
 	"crypto"
-	"fmt"
 
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/packet"
@@ -36,7 +35,10 @@ func (s *Secrets) Unlock(name, email, passphrase string) error {
 		return err
 	}
 	if ring == nil {
-		return s.initializeRing(name, email, passphrase)
+		ring, err = s.initializeRing(name, email, passphrase)
+		if err != nil {
+			return err
+		}
 	}
 	entries, err := openpgp.ReadKeyRing(bytes.NewBuffer(ring))
 	if err != nil {
@@ -46,12 +48,20 @@ func (s *Secrets) Unlock(name, email, passphrase string) error {
 	return nil
 }
 
-func (s *Secrets) initializeRing(name, email, passphrase string) error {
+func (s *Secrets) initializeRing(name, email, passphrase string) ([]byte, error) {
 	entity, _ := openpgp.NewEntity(name, "", email, &packet.Config{
 		DefaultHash:   crypto.SHA256,
 		DefaultCipher: packet.CipherAES256,
 		RSABits:       4096,
 	})
-	fmt.Printf("%#v\n", entity)
-	return nil
+	if err := entity.PrivateKey.Encrypt([]byte(passphrase)); err != nil {
+		return nil, errors.Wrap(err, "Failed to encrypt key")
+	}
+
+	buf := bytes.NewBuffer(nil)
+	if err := entity.Serialize(buf); err != nil {
+		return nil, errors.Wrap(err, "Failed to serialize entity")
+	}
+
+	return buf.Bytes(), nil
 }
