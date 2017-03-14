@@ -14,6 +14,7 @@ type Secrets struct {
 	store         store.Store
 	logger        logging.Logger
 	entities      openpgp.EntityList
+	index         *Index
 	MasterKeyBits int
 }
 

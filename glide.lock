@@ -1,5 +1,5 @@
-hash: 35419eb7c94094c710a8a2d98fd46169e703972708553c32ed2e5cf02d75062a
-updated: 2017-03-12T17:59:18.522999818+01:00
+hash: 43789ff06e5770299c00c426d86d32b15684ffdbe99e48bf24251803261145ce
+updated: 2017-03-13T18:46:08.399225331+01:00
 imports:
 - name: github.com/chzyer/readline
   version: 62c6fe6193755f722b8b8788aa7357be55a50ff1
@@ -46,6 +46,8 @@ testImports:
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
+- name: github.com/leanovate/gopter
+  version: 20e2535154a3bc8c2b8e9f9f1b6daa714a3b3db8
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
