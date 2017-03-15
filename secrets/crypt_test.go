@@ -24,11 +24,7 @@ func TestCrypt(t *testing.T) {
 
 	parameters := gopter.DefaultTestParameters()
 
-	if !testing.Short() {
-		parameters.MaxSize = 200000
-	}
-
-	secrets, err := NewSecrets("file://"+tempDir, logger)
+	secrets, err := NewSecrets("file://"+tempDir, "testNode", logger)
 	require.Nil(err)
 	secrets.MasterKeyBits = 1024
 
@@ -54,8 +50,13 @@ func TestCrypt(t *testing.T) {
 		},
 		gen.StructPtr(reflect.TypeOf(&SecretBlock{}), map[string]gopter.Gen{
 			"ID": gen.Identifier(),
-			"Version": gen.StructPtr(reflect.TypeOf(&api.SecretVersion{}), map[string]gopter.Gen{
-				"Name": gen.AnyString(),
+			"Version": gen.Struct(reflect.TypeOf(api.SecretVersion{}), map[string]gopter.Gen{
+				"Name":      gen.AnyString(),
+				"Timestamp": gen.Time(),
+				"Tags":      gen.SliceOf(gen.AnyString()),
+				"Attachments": gen.SliceOf(gen.Struct(reflect.TypeOf(api.SecretAttachment{}), map[string]gopter.Gen{
+					"Name": gen.AnyString(),
+				})),
 			}),
 		}),
 	))

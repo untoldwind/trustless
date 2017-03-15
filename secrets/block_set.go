@@ -16,7 +16,7 @@ type blockSet map[string]blockRef
 
 func newBlockSet(store store.Store) (blockSet, error) {
 	result := blockSet{}
-	commits := map[string]bool{}
+	commits := IDSet{}
 
 	heads, err := store.Heads()
 	if err != nil {
@@ -25,14 +25,14 @@ func newBlockSet(store store.Store) (blockSet, error) {
 	for _, head := range heads {
 		commitID := head.CommitID
 		for commitID != "" {
-			if _, ok := commits[commitID]; ok {
+			if commits.Contains(commitID) {
 				continue
 			}
 			commit, err := store.GetCommit(commitID)
 			if err != nil {
 				return nil, err
 			}
-			commits[commitID] = true
+			commits.Add(commitID)
 
 			for _, change := range commit.Changes {
 				ref, ok := result[change.BlockID]
