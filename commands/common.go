@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	cli "gopkg.in/urfave/cli.v2"
 	yaml "gopkg.in/yaml.v2"
@@ -101,4 +103,24 @@ func writeClientConfig(config *config.CommonConfig) error {
 		return errors.Wrap(err, "write config file failed")
 	}
 	return nil
+}
+
+func handleSignals(logger logging.Logger) error {
+	signalCh := make(chan os.Signal, 4)
+	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
+
+	for {
+		sig := <-signalCh
+
+		logger.Infof("Caught signal: %v", sig)
+
+		shutdown := false
+		if sig == os.Interrupt || sig == syscall.SIGTERM {
+			shutdown = true
+		}
+
+		if shutdown {
+			return nil
+		}
+	}
 }
