@@ -1,9 +1,11 @@
 package secrets
 
 import (
+	"sort"
 	"sync"
 
 	"github.com/untoldwind/trustless/api"
+	"github.com/untoldwind/trustless/store/model"
 )
 
 type IndexEntry struct {
@@ -15,9 +17,30 @@ type Index struct {
 	lock    sync.Mutex
 	Entries map[string]*IndexEntry
 	Commits IDSet
+	Tags    IDSet
 }
 
-func (i *Index) registerCommit(commitID string, changes map[string]*SecretBlock) {
+func (i *Index) list() *api.SecretList {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	tags := make(sort.StringSlice, 0, len(i.Tags))
+	for tag := range i.Tags {
+		tags = append(tags, tag)
+	}
+	tags.Sort()
+
+	entries := make([]*api.SecretEntry, 0, len(i.Entries))
+	for _, entry := range i.Entries {
+		entries = append(entries, &entry.SecretEntry)
+	}
+	return &api.SecretList{
+		AllTags: tags,
+		Entries: entries,
+	}
+}
+
+func (i *Index) registerCommit(commitID string, changedBlocks map[string]*SecretBlock) {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
@@ -25,11 +48,12 @@ func (i *Index) registerCommit(commitID string, changes map[string]*SecretBlock)
 		return
 	}
 
-	for blockID, secretBlock := range changes {
+	for blockID, secretBlock := range changedBlocks {
 		if secretBlock != nil {
+			i.Tags.AddAll(secretBlock.Version.Tags)
 			entry, ok := i.Entries[secretBlock.ID]
 			if !ok {
-				entry := &IndexEntry{
+				entry = &IndexEntry{
 					SecretEntry: api.SecretEntry{
 						ID:        secretBlock.ID,
 						Type:      secretBlock.Type,
@@ -65,22 +89,46 @@ func (s *Secrets) buildIndex() error {
 	if s.IsLocked() {
 		return SecretsLockedError
 	}
-	blocks, err := newBlockSet(s.store)
+	s.index = &Index{
+		Entries: map[string]*IndexEntry{},
+		Commits: IDSet{},
+		Tags:    IDSet{},
+	}
+	heads, err := s.store.Heads()
 	if err != nil {
 		return err
 	}
-
-	for blockID, blockRef := range blocks {
-		if blockRef.delete {
-			continue
-		}
-		block, err := s.store.GetBlock(blockID)
-		if err != nil {
-			return err
-		}
-		if len(block) == 0 {
-			continue
+	for _, head := range heads {
+		commitID := head.CommitID
+		for commitID != "" {
+			if s.index.Commits.Contains(commitID) {
+				break
+			}
+			commit, err := s.store.GetCommit(commitID)
+			if err != nil {
+				return err
+			}
+			changedBlocks := map[string]*SecretBlock{}
+			for _, change := range commit.Changes {
+				switch change.Operation {
+				case model.ChangeOpAdd:
+					block, err := s.store.GetBlock(change.BlockID)
+					if err != nil {
+						return err
+					}
+					secretBlock, err := s.decryptSecret(block)
+					if err != nil {
+						return err
+					}
+					changedBlocks[change.BlockID] = secretBlock
+				case model.ChangeOpDelete:
+					changedBlocks[change.BlockID] = nil
+				}
+			}
+			s.index.registerCommit(commitID, changedBlocks)
+			commitID = commit.PrevCommitID
 		}
 	}
+
 	return nil
 }

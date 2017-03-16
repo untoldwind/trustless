@@ -30,8 +30,9 @@ func TestSecrets(t *testing.T) {
 
 	require.False(secrets.IsLocked())
 
+	now := time.Now().Add(-1 * time.Minute)
 	version1 := api.SecretVersion{
-		Timestamp: time.Now(),
+		Timestamp: now,
 		Name:      "my-login",
 		Tags:      []string{"web", "private"},
 		Properties: map[string]string{
@@ -42,4 +43,34 @@ func TestSecrets(t *testing.T) {
 	}
 	err = secrets.Add("secret1", api.SecretTypeLogin, version1)
 	require.Nil(err)
+
+	list, err := secrets.List()
+	require.Nil(err)
+	require.Len(list.AllTags, 2)
+	require.Len(list.Entries, 1)
+	require.Equal("secret1", list.Entries[0].ID)
+	require.Equal(version1.Name, list.Entries[0].Name)
+	require.Equal(version1.Tags, list.Entries[0].Tags)
+
+	now.Add(1 * time.Minute)
+	version2 := api.SecretVersion{
+		Timestamp: now,
+		Name:      "my-login",
+		Tags:      []string{"private"},
+		Properties: map[string]string{
+			"url":      "https://site.com",
+			"username": "tester",
+			"password": "supersecret2",
+		},
+	}
+	err = secrets.Add("secret1", api.SecretTypeLogin, version2)
+	require.Nil(err)
+
+	list, err = secrets.List()
+	require.Nil(err)
+	require.Len(list.AllTags, 2)
+	require.Len(list.Entries, 1)
+	require.Equal("secret1", list.Entries[0].ID)
+	require.Equal(version2.Name, list.Entries[0].Name)
+	require.Equal(version2.Tags, list.Entries[0].Tags)
 }

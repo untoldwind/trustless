@@ -13,6 +13,12 @@ func (c IDSet) Add(id string) {
 	c[id] = true
 }
 
+func (c IDSet) AddAll(ids []string) {
+	for _, id := range ids {
+		c[id] = true
+	}
+}
+
 func (c IDSet) Remove(id string) {
 	delete(c, id)
 }
@@ -32,8 +38,6 @@ func (c *IDSet) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c = &IDSet{}
-	for _, id := range ids {
-		(*c)[id] = true
-	}
+	c.AddAll(ids)
 	return nil
 }
