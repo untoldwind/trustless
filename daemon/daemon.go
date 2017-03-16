@@ -18,7 +18,8 @@ type Daemon struct {
 
 func NewDaemon(secrets *secrets.Secrets, logger logging.Logger) *Daemon {
 	return &Daemon{
-		logger: logger.WithField("package", "daemon"),
+		logger:  logger.WithField("package", "daemon"),
+		secrets: secrets,
 	}
 }
 
@@ -57,6 +58,6 @@ func (d *Daemon) Stop() error {
 
 func (d *Daemon) routeHandler() http.Handler {
 	return routing.NewRouteHandler(
-		rest.ResourceMatcher(NewRootResource(d.logger)),
+		rest.ResourceMatcher(NewRootResource(d.secrets, d.logger)),
 	)
 }

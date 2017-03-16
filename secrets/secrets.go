@@ -39,7 +39,7 @@ func NewSecrets(storeURL, nodeID string, logger logging.Logger) (*Secrets, error
 }
 
 func (s *Secrets) IsInitialized() bool {
-	return len(s.entities) == 0
+	return len(s.entities) > 0
 }
 
 func (s *Secrets) readRing() error {

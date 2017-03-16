@@ -23,14 +23,14 @@ func TestSecrets(t *testing.T) {
 	require.Nil(err)
 	secrets.MasterKeyBits = 1024
 
-	require.True(secrets.IsInitialized())
+	require.False(secrets.IsInitialized())
 	require.True(secrets.IsLocked())
 
 	err = secrets.Unlock("Tester", "tester@mail.com", "12345678")
 	require.Nil(err)
 
 	require.False(secrets.IsLocked())
-	require.False(secrets.IsInitialized())
+	require.True(secrets.IsInitialized())
 
 	now := time.Now().Add(-1 * time.Minute)
 	version1 := api.SecretVersion{
