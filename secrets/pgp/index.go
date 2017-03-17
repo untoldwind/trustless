@@ -15,10 +15,11 @@ type IndexEntry struct {
 }
 
 type Index struct {
-	lock    sync.Mutex
-	Entries map[string]*IndexEntry
-	Commits secrets.IDSet
-	Tags    secrets.IDSet
+	lock          sync.Mutex
+	Entries       map[string]*IndexEntry
+	Commits       secrets.IDSet
+	Tags          secrets.IDSet
+	DeletedBlocks secrets.IDSet
 }
 
 func (i *Index) list() *api.SecretList {
@@ -50,6 +51,9 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secret
 	}
 
 	for blockID, secretBlock := range changedBlocks {
+		if i.DeletedBlocks.Contains(blockID) {
+			continue
+		}
 		if secretBlock != nil {
 			i.Tags.AddAll(secretBlock.Version.Tags)
 			entry, ok := i.Entries[secretBlock.ID]
@@ -73,6 +77,7 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secret
 				entry.Timestamp = secretBlock.Version.Timestamp
 			}
 		} else {
+			i.DeletedBlocks.Add(blockID)
 			for entryID, entry := range i.Entries {
 				if entry.Blocks.Contains(blockID) {
 					entry.Blocks.Remove(blockID)

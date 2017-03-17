@@ -21,7 +21,7 @@ func NewStatusResource(secrets secrets.Secrets) *StatusResource {
 }
 
 func (StatusResource) Self() rest.Link {
-	return rest.SimpleLink("/v1/status")
+	return rest.SimpleLink("/status")
 }
 
 func (r *StatusResource) Get(request *http.Request) (interface{}, error) {

@@ -23,7 +23,7 @@ type RootResource struct {
 func NewRootResource(secrets secrets.Secrets, logger logging.Logger) *RootResource {
 	return &RootResource{
 		logger:   logger.WithField("resource", "service"),
-		version1: NewVersion1Resource(logger),
+		version1: NewVersion1Resource(secrets, logger),
 		status:   NewStatusResource(secrets),
 	}
 }
