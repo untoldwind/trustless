@@ -13,13 +13,13 @@ const (
 )
 
 type SecretCurrent struct {
-	ID      string        `json:"id"`
-	Type    SecretType    `json:"type"`
-	Current SecretVersion `json:"current"`
+	ID      string         `json:"id"`
+	Type    SecretType     `json:"type"`
+	Current *SecretVersion `json:"current,omitempty"`
 }
 
 // Secret holds all information of a secret
 type Secret struct {
 	SecretCurrent
-	Version SecretVersions `json:"versions"`
+	Versions SecretVersions `json:"versions"`
 }

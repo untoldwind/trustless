@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/untoldwind/trustless/daemon"
-	"github.com/untoldwind/trustless/secrets"
+	"github.com/untoldwind/trustless/secrets/pgp"
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -20,7 +20,7 @@ func startDaemon(ctx *cli.Context) error {
 		return err
 	}
 
-	secrets, err := secrets.NewSecrets(config.StoreURL, config.NodeID, logger)
+	secrets, err := pgp.NewPGPSecrets(config.StoreURL, config.NodeID, 4096, logger)
 	if err != nil {
 		return err
 	}

@@ -16,6 +16,7 @@ type SecretVersion struct {
 	Tags        []string           `json:"tags"`
 	Properties  map[string]string  `json:"properties"`
 	Attachments []SecretAttachment `json:"attachment"`
+	Deleted     bool               `json:"deleted"`
 }
 
 type SecretVersions []*SecretVersion

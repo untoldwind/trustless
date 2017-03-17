@@ -11,10 +11,10 @@ import (
 
 type StatusResource struct {
 	rest.ResourceBase
-	secrets *secrets.Secrets
+	secrets secrets.Secrets
 }
 
-func NewStatusResource(secrets *secrets.Secrets) *StatusResource {
+func NewStatusResource(secrets secrets.Secrets) *StatusResource {
 	return &StatusResource{
 		secrets: secrets,
 	}

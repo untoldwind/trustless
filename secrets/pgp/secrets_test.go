@@ -1,4 +1,4 @@
-package secrets_test
+package pgp_test
 
 import (
 	"io/ioutil"
@@ -9,7 +9,7 @@ import (
 	"github.com/leanovate/microtools/logging"
 	"github.com/stretchr/testify/require"
 	"github.com/untoldwind/trustless/api"
-	"github.com/untoldwind/trustless/secrets"
+	"github.com/untoldwind/trustless/secrets/pgp"
 )
 
 func TestSecrets(t *testing.T) {
@@ -19,9 +19,8 @@ func TestSecrets(t *testing.T) {
 	tempDir, err := ioutil.TempDir(os.TempDir(), "secrets_test")
 	require.Nil(err)
 
-	secrets, err := secrets.NewSecrets("file://"+tempDir, "test-client", logger)
+	secrets, err := pgp.NewPGPSecrets("file://"+tempDir, "test-client", 1024, logger)
 	require.Nil(err)
-	secrets.MasterKeyBits = 1024
 
 	require.False(secrets.IsInitialized())
 	require.True(secrets.IsLocked())
@@ -75,4 +74,14 @@ func TestSecrets(t *testing.T) {
 	require.Equal("secret1", list.Entries[0].ID)
 	require.Equal(version2.Name, list.Entries[0].Name)
 	require.Equal(version2.Tags, list.Entries[0].Tags)
+
+	actualSecret, err := secrets.Get("secret1")
+	require.Nil(err)
+	require.Equal("secret1", actualSecret.ID)
+	require.Len(actualSecret.Versions, 2)
+	require.Equal(version2.Name, actualSecret.Current.Name)
+	require.Equal(version2.Tags, actualSecret.Current.Tags)
+	require.Equal(version2.Properties, actualSecret.Current.Properties)
+	require.Equal(version1.Tags, actualSecret.Versions[1].Tags)
+	require.Equal(version1.Properties, actualSecret.Versions[1].Properties)
 }

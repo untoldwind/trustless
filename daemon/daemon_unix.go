@@ -24,10 +24,14 @@ func (d *Daemon) createListener() (net.Listener, error) {
 	if err := os.Remove(location); err != nil && !os.IsNotExist(err) {
 		return nil, errors.Wrap(err, "Failed to cleanup unix socket")
 	}
-	listener, err := net.Listen("unix", location)
+	listener, err := net.ListenUnix("unix", &net.UnixAddr{
+		Net:  "unix",
+		Name: location,
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to create listener")
 	}
+	listener.SetUnlinkOnClose(true)
 	if err := os.Chmod(location, 0700); err != nil {
 		return nil, errors.Wrap(err, "Failed to chmod")
 	}

@@ -1,23 +1,24 @@
-package secrets
+package pgp
 
 import (
 	"sort"
 	"sync"
 
 	"github.com/untoldwind/trustless/api"
+	"github.com/untoldwind/trustless/secrets"
 	"github.com/untoldwind/trustless/store/model"
 )
 
 type IndexEntry struct {
 	api.SecretEntry
-	Blocks IDSet
+	Blocks secrets.IDSet
 }
 
 type Index struct {
 	lock    sync.Mutex
 	Entries map[string]*IndexEntry
-	Commits IDSet
-	Tags    IDSet
+	Commits secrets.IDSet
+	Tags    secrets.IDSet
 }
 
 func (i *Index) list() *api.SecretList {
@@ -40,7 +41,7 @@ func (i *Index) list() *api.SecretList {
 	}
 }
 
-func (i *Index) registerCommit(commitID string, changedBlocks map[string]*SecretBlock) {
+func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secrets.SecretBlock) {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
@@ -61,7 +62,7 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*Secret
 						Tags:      secretBlock.Version.Tags,
 						Timestamp: secretBlock.Version.Timestamp,
 					},
-					Blocks: IDSet{},
+					Blocks: secrets.IDSet{},
 				}
 				i.Entries[secretBlock.ID] = entry
 			}
@@ -85,14 +86,14 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*Secret
 	}
 }
 
-func (s *Secrets) buildIndex() error {
+func (s *pgpSecrets) buildIndex() error {
 	if s.IsLocked() {
-		return SecretsLockedError
+		return secrets.SecretsLockedError
 	}
 	s.index = &Index{
 		Entries: map[string]*IndexEntry{},
-		Commits: IDSet{},
-		Tags:    IDSet{},
+		Commits: secrets.IDSet{},
+		Tags:    secrets.IDSet{},
 	}
 	heads, err := s.store.Heads()
 	if err != nil {
@@ -108,7 +109,7 @@ func (s *Secrets) buildIndex() error {
 			if err != nil {
 				return err
 			}
-			changedBlocks := map[string]*SecretBlock{}
+			changedBlocks := map[string]*secrets.SecretBlock{}
 			for _, change := range commit.Changes {
 				switch change.Operation {
 				case model.ChangeOpAdd:

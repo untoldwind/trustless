@@ -1,4 +1,4 @@
-package secrets
+package pgp
 
 import (
 	"bytes"
@@ -10,11 +10,12 @@ import (
 	"golang.org/x/crypto/openpgp/packet"
 
 	"github.com/pkg/errors"
+	"github.com/untoldwind/trustless/secrets"
 )
 
-func (s *Secrets) encryptSecret(secretBlock *SecretBlock) ([]byte, error) {
+func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, error) {
 	if s.IsLocked() { // NOTE: Strickly speaking, we can encrypt even if store is locked, future enhancement maybe
-		return nil, SecretsLockedError
+		return nil, secrets.SecretsLockedError
 	}
 	content, err := json.Marshal(secretBlock)
 	if err != nil {
@@ -41,9 +42,9 @@ func (s *Secrets) encryptSecret(secretBlock *SecretBlock) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-func (s *Secrets) decryptSecret(encrypted []byte) (*SecretBlock, error) {
+func (s *pgpSecrets) decryptSecret(encrypted []byte) (*secrets.SecretBlock, error) {
 	if s.IsLocked() {
-		return nil, SecretsLockedError
+		return nil, secrets.SecretsLockedError
 	}
 
 	message, err := openpgp.ReadMessage(bytes.NewBuffer(encrypted), s.entities, nil, nil)
@@ -59,7 +60,7 @@ func (s *Secrets) decryptSecret(encrypted []byte) (*SecretBlock, error) {
 		return nil, err
 	}
 
-	var secert SecretBlock
+	var secert secrets.SecretBlock
 	if err := json.Unmarshal(content, &secert); err != nil {
 		return nil, errors.Wrap(err, "Json unmarshal failed")
 	}

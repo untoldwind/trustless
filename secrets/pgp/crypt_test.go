@@ -1,4 +1,4 @@
-package secrets
+package pgp
 
 import (
 	"io/ioutil"
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/untoldwind/trustless/api"
+	"github.com/untoldwind/trustless/secrets"
 )
 
 func TestCrypt(t *testing.T) {
@@ -24,22 +25,22 @@ func TestCrypt(t *testing.T) {
 
 	parameters := gopter.DefaultTestParameters()
 
-	secrets, err := NewSecrets("file://"+tempDir, "testNode", logger)
+	_secrets, err := NewPGPSecrets("file://"+tempDir, "testNode", 1024, logger)
 	require.Nil(err)
-	secrets.MasterKeyBits = 1024
+	pgpSecrets := _secrets.(*pgpSecrets)
 
-	err = secrets.Unlock("Tester", "tester@mail.com", "12345678")
+	err = pgpSecrets.Unlock("Tester", "tester@mail.com", "12345678")
 	require.Nil(err)
 
 	properties := gopter.NewProperties(parameters)
 
 	properties.Property("Any SecretBlock can be encrypted/decrypted", prop.ForAll(
-		func(original *SecretBlock) (string, error) {
-			encrypted, err := secrets.encryptSecret(original)
+		func(original *secrets.SecretBlock) (string, error) {
+			encrypted, err := pgpSecrets.encryptSecret(original)
 			if err != nil {
 				return "", err
 			}
-			decrypted, err := secrets.decryptSecret(encrypted)
+			decrypted, err := pgpSecrets.decryptSecret(encrypted)
 			if err != nil {
 				return "", err
 			}
@@ -48,7 +49,7 @@ func TestCrypt(t *testing.T) {
 			}
 			return "", nil
 		},
-		gen.StructPtr(reflect.TypeOf(&SecretBlock{}), map[string]gopter.Gen{
+		gen.StructPtr(reflect.TypeOf(&secrets.SecretBlock{}), map[string]gopter.Gen{
 			"ID": gen.Identifier(),
 			"Version": gen.Struct(reflect.TypeOf(api.SecretVersion{}), map[string]gopter.Gen{
 				"Name":      gen.AnyString(),

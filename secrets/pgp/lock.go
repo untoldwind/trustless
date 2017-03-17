@@ -1,4 +1,4 @@
-package secrets
+package pgp
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/openpgp/s2k"
 )
 
-func (s *Secrets) IsLocked() bool {
+func (s *pgpSecrets) IsLocked() bool {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -22,7 +22,7 @@ func (s *Secrets) IsLocked() bool {
 	return true
 }
 
-func (s *Secrets) Lock() {
+func (s *pgpSecrets) Lock() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -34,7 +34,7 @@ func (s *Secrets) Lock() {
 	}
 }
 
-func (s *Secrets) Unlock(name, email, passphrase string) error {
+func (s *pgpSecrets) Unlock(name, email, passphrase string) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -66,11 +66,11 @@ func (s *Secrets) Unlock(name, email, passphrase string) error {
 	return nil
 }
 
-func (s *Secrets) initializeRing(name, email, passphrase string) ([]byte, error) {
+func (s *pgpSecrets) initializeRing(name, email, passphrase string) ([]byte, error) {
 	config := &packet.Config{
 		DefaultHash:   crypto.SHA256,
 		DefaultCipher: packet.CipherAES256,
-		RSABits:       s.MasterKeyBits,
+		RSABits:       s.masterKeyBits,
 	}
 	entity, err := openpgp.NewEntity(name, "", email, config)
 	if err != nil {

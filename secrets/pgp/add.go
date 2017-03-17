@@ -1,12 +1,13 @@
-package secrets
+package pgp
 
 import (
 	"github.com/untoldwind/trustless/api"
+	"github.com/untoldwind/trustless/secrets"
 	"github.com/untoldwind/trustless/store/model"
 )
 
-func (s *Secrets) Add(id string, secretType api.SecretType, version api.SecretVersion) error {
-	secretBlock := &SecretBlock{
+func (s *pgpSecrets) Add(id string, secretType api.SecretType, version api.SecretVersion) error {
+	secretBlock := &secrets.SecretBlock{
 		ID:      id,
 		Type:    secretType,
 		Version: version,
@@ -23,7 +24,7 @@ func (s *Secrets) Add(id string, secretType api.SecretType, version api.SecretVe
 		{Operation: model.ChangeOpAdd, BlockID: blockID},
 	})
 	if s.index != nil {
-		s.index.registerCommit(commitID, map[string]*SecretBlock{
+		s.index.registerCommit(commitID, map[string]*secrets.SecretBlock{
 			blockID: secretBlock,
 		})
 	}

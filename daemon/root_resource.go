@@ -15,14 +15,16 @@ type ServiceDocument struct {
 
 type RootResource struct {
 	rest.ResourceBase
-	logger logging.Logger
-	status *StatusResource
+	logger   logging.Logger
+	version1 *Version1Resource
+	status   *StatusResource
 }
 
-func NewRootResource(secrets *secrets.Secrets, logger logging.Logger) *RootResource {
+func NewRootResource(secrets secrets.Secrets, logger logging.Logger) *RootResource {
 	return &RootResource{
-		logger: logger.WithField("resource", "service"),
-		status: NewStatusResource(secrets),
+		logger:   logger.WithField("resource", "service"),
+		version1: NewVersion1Resource(logger),
+		status:   NewStatusResource(secrets),
 	}
 }
 
@@ -35,12 +37,14 @@ func (r RootResource) Get(request *http.Request) (interface{}, error) {
 		Links: map[string]rest.Link{
 			"self":   r.Self(),
 			"status": r.status.Self(),
+			"v1":     r.status.Self(),
 		},
 	}, nil
 }
 
 func (r *RootResource) SubResources() routing.Matcher {
 	return routing.Sequence(
+		routing.Prefix("/v1", rest.ResourceMatcher(r.version1)),
 		routing.Prefix("/status", rest.ResourceMatcher(r.status)),
 	)
 }

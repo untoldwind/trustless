@@ -1,4 +1,4 @@
-package secrets
+package pgp
 
 import (
 	"bytes"

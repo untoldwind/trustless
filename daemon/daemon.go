@@ -12,11 +12,11 @@ import (
 
 type Daemon struct {
 	logger   logging.Logger
-	secrets  *secrets.Secrets
+	secrets  secrets.Secrets
 	listener net.Listener
 }
 
-func NewDaemon(secrets *secrets.Secrets, logger logging.Logger) *Daemon {
+func NewDaemon(secrets secrets.Secrets, logger logging.Logger) *Daemon {
 	return &Daemon{
 		logger:  logger.WithField("package", "daemon"),
 		secrets: secrets,
@@ -38,7 +38,7 @@ func (d *Daemon) Start() error {
 	}
 
 	go func() {
-		d.logger.Infof("Starting daemon")
+		d.logger.Infof("Starting daemon: %v", d.listener.Addr())
 		if err := server.Serve(d.listener); err != nil {
 			d.logger.ErrorErr(err)
 		}

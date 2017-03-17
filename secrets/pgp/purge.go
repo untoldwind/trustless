@@ -1,4 +1,4 @@
-package secrets
+package pgp
 
 import (
 	"crypto/dsa"
@@ -11,7 +11,7 @@ import (
 )
 
 // overwrite private part of key with zeros
-func (s *Secrets) purgePrivateKey(key *packet.PrivateKey) {
+func (s *pgpSecrets) purgePrivateKey(key *packet.PrivateKey) {
 	if key.PrivateKey == nil || key.Encrypted {
 		return
 	}
