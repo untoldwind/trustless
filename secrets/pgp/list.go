@@ -7,7 +7,7 @@ import (
 
 func (s *pgpSecrets) List() (*api.SecretList, error) {
 	if s.IsLocked() {
-		return nil, secrets.SecretsLockedError
+		return nil, secrets.ErrSecretsLocked
 	}
 	if err := s.buildIndex(); err != nil {
 		return nil, err

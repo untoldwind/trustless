@@ -8,11 +8,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// CommonConfig contains the common client/daemon configuration
 type CommonConfig struct {
 	StoreURL string `json:"store_url" yaml:"store_url"`
 	NodeID   string `json:"node_id" yaml:"node_id"`
 }
 
+// DefaultCommonConfig create a CommonConfig with reasonable defaults
 func DefaultCommonConfig() (*CommonConfig, error) {
 	nodeID, err := generateNodeID()
 	if err != nil {

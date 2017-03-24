@@ -6,7 +6,8 @@ import (
 	cli "gopkg.in/urfave/cli.v2"
 )
 
-var DaemonCommang = &cli.Command{
+// DaemonCommand is the command line command to start the trustless daemon
+var DaemonCommand = &cli.Command{
 	Name:   "daemon",
 	Usage:  "Start daemon",
 	Action: withDetailedErrors(startDaemon),

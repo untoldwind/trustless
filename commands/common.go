@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -16,10 +17,13 @@ import (
 	"github.com/fatih/color"
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
+	"github.com/untoldwind/trustless/client"
 	"github.com/untoldwind/trustless/config"
 )
 
 var boldRed = color.New(color.FgRed, color.Bold).SprintFunc()
+var yellow = color.New(color.FgYellow).SprintFunc()
+var green = color.New(color.FgGreen).SprintFunc()
 
 func withDetailedErrors(action cli.ActionFunc) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
@@ -103,6 +107,14 @@ func writeClientConfig(config *config.CommonConfig) error {
 		return errors.Wrap(err, "write config file failed")
 	}
 	return nil
+}
+
+func createClient(logger logging.Logger) *client.Client {
+	return client.NewClient(logger)
+}
+
+func createClientContext() context.Context {
+	return context.Background()
 }
 
 func handleSignals(logger logging.Logger) error {

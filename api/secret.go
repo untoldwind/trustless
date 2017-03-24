@@ -12,13 +12,14 @@ const (
 	SecretTypeLicence SecretType = "licence"
 )
 
+// SecretCurrent contains the current (head) version of a secret
 type SecretCurrent struct {
 	ID      string         `json:"id"`
 	Type    SecretType     `json:"type"`
 	Current *SecretVersion `json:"current,omitempty"`
 }
 
-// Secret holds all information of a secret
+// Secret holds all information of a secret (including all previous versions)
 type Secret struct {
 	SecretCurrent
 	Versions SecretVersions `json:"versions"`

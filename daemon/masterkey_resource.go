@@ -10,12 +10,14 @@ import (
 	"github.com/untoldwind/trustless/secrets"
 )
 
+// MasterKeyResource is a REST resource representing the master key of the secret store
 type MasterKeyResource struct {
 	rest.ResourceBase
 	logger  logging.Logger
 	secrets secrets.Secrets
 }
 
+// NewMasterKeyResource creates a new MasterKeyResource
 func NewMasterKeyResource(secrets secrets.Secrets, logger logging.Logger) *MasterKeyResource {
 	return &MasterKeyResource{
 		logger:  logger.WithField("resource", "masterkey"),
@@ -23,16 +25,19 @@ func NewMasterKeyResource(secrets secrets.Secrets, logger logging.Logger) *Maste
 	}
 }
 
+// Self link to the resource
 func (MasterKeyResource) Self() rest.Link {
 	return rest.SimpleLink("/v1/masterkey")
 }
 
+// Get the status of the master key
 func (r *MasterKeyResource) Get(request *http.Request) (interface{}, error) {
 	return &api.MasterKey{
 		Locked: r.secrets.IsLocked(),
 	}, nil
 }
 
+// Update unlocks the master keys.
 func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 	var unlock api.MasterKeyUnlock
 
@@ -47,6 +52,7 @@ func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 	return nil, nil
 }
 
+// Delete locks the master key
 func (r *MasterKeyResource) Delete(request *http.Request) (interface{}, error) {
 	r.secrets.Lock()
 	return nil, nil

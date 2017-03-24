@@ -15,7 +15,7 @@ import (
 
 func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, error) {
 	if s.IsLocked() { // NOTE: Strickly speaking, we can encrypt even if store is locked, future enhancement maybe
-		return nil, secrets.SecretsLockedError
+		return nil, secrets.ErrSecretsLocked
 	}
 	content, err := json.Marshal(secretBlock)
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, er
 
 func (s *pgpSecrets) decryptSecret(encrypted []byte) (*secrets.SecretBlock, error) {
 	if s.IsLocked() {
-		return nil, secrets.SecretsLockedError
+		return nil, secrets.ErrSecretsLocked
 	}
 
 	message, err := openpgp.ReadMessage(bytes.NewBuffer(encrypted), s.entities, nil, nil)

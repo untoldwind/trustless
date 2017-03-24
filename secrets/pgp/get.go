@@ -15,7 +15,7 @@ func (s *pgpSecrets) Get(secretID string) (*api.Secret, error) {
 	}
 	entry, ok := s.index.Entries[secretID]
 	if !ok {
-		return nil, secrets.SecretNotFound
+		return nil, secrets.ErrSecretNotFound
 	}
 	if entry.ID != secretID {
 		return nil, errors.New("Index integrety failure")

@@ -21,6 +21,7 @@ type pgpSecrets struct {
 	masterKeyBits int
 }
 
+// NewPGPSecrets creats a new secrets store based on openpgp
 func NewPGPSecrets(storeURL, nodeID string, masterKeyBits int, logger logging.Logger) (secrets.Secrets, error) {
 	store, err := store.NewStore(storeURL, logger)
 	if err != nil {

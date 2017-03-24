@@ -21,9 +21,6 @@ func (d *Daemon) createListener() (net.Listener, error) {
 		return nil, errors.Wrap(err, "Failed to create socket dir")
 	}
 
-	if err := os.Remove(location); err != nil && !os.IsNotExist(err) {
-		return nil, errors.Wrap(err, "Failed to cleanup unix socket")
-	}
 	listener, err := net.ListenUnix("unix", &net.UnixAddr{
 		Net:  "unix",
 		Name: location,

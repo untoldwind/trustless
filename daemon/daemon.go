@@ -10,12 +10,14 @@ import (
 	"github.com/untoldwind/trustless/secrets"
 )
 
+// Daemon is the daomnized trustless server
 type Daemon struct {
 	logger   logging.Logger
 	secrets  secrets.Secrets
 	listener net.Listener
 }
 
+// NewDaemon creates a new trustless daeom
 func NewDaemon(secrets secrets.Secrets, logger logging.Logger) *Daemon {
 	return &Daemon{
 		logger:  logger.WithField("package", "daemon"),
@@ -23,6 +25,7 @@ func NewDaemon(secrets secrets.Secrets, logger logging.Logger) *Daemon {
 	}
 }
 
+// Start the daemon
 func (d *Daemon) Start() error {
 	server := &http.Server{
 		Handler: routing.NewLoggingHandler(
@@ -47,13 +50,13 @@ func (d *Daemon) Start() error {
 	return nil
 }
 
+// Stop the daemon
 func (d *Daemon) Stop() error {
 	d.logger.Info("Stopping daemon")
 	if d.listener != nil {
 		return d.listener.Close()
 	}
 	return nil
-
 }
 
 func (d *Daemon) routeHandler() http.Handler {

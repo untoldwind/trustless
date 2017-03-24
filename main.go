@@ -51,7 +51,10 @@ func main() {
 			},
 		},
 		Commands: []*cli.Command{
-			commands.DaemonCommang,
+			commands.InfoCommand,
+			commands.LockCommand,
+			commands.UnlockCommand,
+			commands.DaemonCommand,
 		},
 	}
 
