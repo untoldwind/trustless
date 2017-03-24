@@ -21,10 +21,11 @@ func startDaemon(ctx *cli.Context) error {
 		return err
 	}
 
-	secrets, err := pgp.NewPGPSecrets(config.StoreURL, config.NodeID, 4096, logger)
+	secrets, err := pgp.NewPGPSecrets(config.StoreURL, config.NodeID, 4096, config.UnlockTimeout, config.UnlockTimeoutHard, logger)
 	if err != nil {
 		return err
 	}
+	defer secrets.Lock()
 
 	daemon := daemon.NewDaemon(secrets, logger)
 

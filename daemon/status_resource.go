@@ -25,9 +25,11 @@ func (StatusResource) Self() rest.Link {
 }
 
 func (r *StatusResource) Get(request *http.Request) (interface{}, error) {
+	locked, autolockAt := r.secrets.IsLocked()
 	return &api.Status{
 		Initialized: r.secrets.IsInitialized(),
-		Locked:      r.secrets.IsLocked(),
+		Locked:      locked,
+		AutolockAt:  autolockAt,
 		Version:     config.Version(),
 	}, nil
 }

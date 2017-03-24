@@ -92,7 +92,7 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secret
 }
 
 func (s *pgpSecrets) buildIndex() error {
-	if s.IsLocked() {
+	if locked, _ := s.IsLocked(); locked {
 		return secrets.ErrSecretsLocked
 	}
 	s.index = &Index{

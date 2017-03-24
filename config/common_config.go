@@ -4,14 +4,17 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"encoding/base64"
+	"time"
 
 	"github.com/pkg/errors"
 )
 
 // CommonConfig contains the common client/daemon configuration
 type CommonConfig struct {
-	StoreURL string `json:"store_url" yaml:"store_url"`
-	NodeID   string `json:"node_id" yaml:"node_id"`
+	StoreURL          string        `json:"store_url" yaml:"store_url"`
+	NodeID            string        `json:"node_id" yaml:"node_id"`
+	UnlockTimeout     time.Duration `json:"unlock_timeout" yaml:"unlock_timeout"`
+	UnlockTimeoutHard bool          `json:"unlock_timeout_hard" yaml:"unlock_timeout_hard"`
 }
 
 // DefaultCommonConfig create a CommonConfig with reasonable defaults
@@ -21,8 +24,10 @@ func DefaultCommonConfig() (*CommonConfig, error) {
 		return nil, err
 	}
 	return &CommonConfig{
-		StoreURL: DefaultStoreURL(),
-		NodeID:   nodeID,
+		StoreURL:          DefaultStoreURL(),
+		NodeID:            nodeID,
+		UnlockTimeout:     5 * time.Minute,
+		UnlockTimeoutHard: false,
 	}, nil
 }
 

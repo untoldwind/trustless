@@ -8,6 +8,8 @@ import (
 )
 
 func (s *pgpSecrets) Get(secretID string) (*api.Secret, error) {
+	s.logger.Infof("Get secret %s", secretID)
+
 	if s.index == nil {
 		if err := s.buildIndex(); err != nil {
 			return nil, err
@@ -49,5 +51,6 @@ func (s *pgpSecrets) Get(secretID string) (*api.Secret, error) {
 	if len(result.Versions) > 0 {
 		result.Current = result.Versions[0]
 	}
+	s.autolocker.Reset()
 	return result, nil
 }

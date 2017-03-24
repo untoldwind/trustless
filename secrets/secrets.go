@@ -1,14 +1,20 @@
 package secrets
 
-import "github.com/untoldwind/trustless/api"
+import (
+	"time"
+
+	"github.com/untoldwind/trustless/api"
+)
 
 // Secrets is the interface to any secret store implementation
 type Secrets interface {
 	// IsInitialized checks if the store has been initialized yet
 	IsInitialized() bool
 
-	// IsLocked checks if the the store is currently locked
-	IsLocked() bool
+	// IsLocked checks if the the store is currently locked.
+	// If the store is unlocked it also returned the timestamp when the store
+	// will autolock again.
+	IsLocked() (bool, *time.Time)
 	// Lock the store
 	Lock()
 	// Unlock the store for a given identity

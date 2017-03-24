@@ -5,6 +5,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
@@ -25,7 +26,7 @@ func TestCrypt(t *testing.T) {
 
 	parameters := gopter.DefaultTestParameters()
 
-	_secrets, err := NewPGPSecrets("file://"+tempDir, "testNode", 1024, logger)
+	_secrets, err := NewPGPSecrets("file://"+tempDir, "testNode", 1024, 5*time.Minute, false, logger)
 	require.Nil(err)
 	pgpSecrets := _secrets.(*pgpSecrets)
 

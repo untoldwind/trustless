@@ -7,6 +7,8 @@ import (
 )
 
 func (s *pgpSecrets) Add(id string, secretType api.SecretType, version api.SecretVersion) error {
+	s.logger.Info("Add secret %s", id)
+
 	secretBlock := &secrets.SecretBlock{
 		ID:      id,
 		Type:    secretType,
@@ -28,5 +30,6 @@ func (s *pgpSecrets) Add(id string, secretType api.SecretType, version api.Secre
 			blockID: secretBlock,
 		})
 	}
+	s.autolocker.Reset()
 	return err
 }

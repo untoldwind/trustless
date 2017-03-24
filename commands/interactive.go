@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/pkg/errors"
@@ -81,13 +82,19 @@ func readInitialUnlock() (*api.MasterKeyUnlock, error) {
 func reportStatus(status *api.Status) {
 	fmt.Println()
 	if status.Initialized {
-		fmt.Printf("Store is: %s\n", green("Initialized"))
+		fmt.Printf("Store is        : %s\n", green("Initialized"))
 	} else {
-		fmt.Printf("Store is: %s\n", boldRed("Not initialized"))
+		fmt.Printf("Store is        : %s\n", boldRed("Not initialized"))
 	}
 	if status.Locked {
-		fmt.Printf("Store is: %s\n", green("Locked"))
+		fmt.Printf("Store is        : %s\n", green("Locked"))
 	} else {
-		fmt.Printf("Store is: %s\n", yellow("Unlocked"))
+		fmt.Printf("Store is        : %s\n", yellow("Unlocked"))
+		if status.AutolockAt != nil {
+			timeout := status.AutolockAt.Sub(time.Now())
+			timeout = (timeout / time.Second) * time.Second
+
+			fmt.Printf("Will autolock in: %v\n", timeout)
+		}
 	}
 }

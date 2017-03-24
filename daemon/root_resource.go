@@ -9,10 +9,12 @@ import (
 	"github.com/untoldwind/trustless/secrets"
 )
 
+// ServiceDocument models that document provided by the root resource (i.e. /)
 type ServiceDocument struct {
 	Links map[string]rest.Link `json:"_links"`
 }
 
+// RootResource is the root REST resource (i.e. /)
 type RootResource struct {
 	rest.ResourceBase
 	logger   logging.Logger
@@ -20,6 +22,7 @@ type RootResource struct {
 	status   *StatusResource
 }
 
+// NewRootResource creates a new RootResource
 func NewRootResource(secrets secrets.Secrets, logger logging.Logger) *RootResource {
 	return &RootResource{
 		logger:   logger.WithField("resource", "service"),
@@ -28,10 +31,12 @@ func NewRootResource(secrets secrets.Secrets, logger logging.Logger) *RootResour
 	}
 }
 
+// Self link to the resource
 func (RootResource) Self() rest.Link {
 	return rest.SimpleLink("/")
 }
 
+// Get the service document
 func (r RootResource) Get(request *http.Request) (interface{}, error) {
 	return &ServiceDocument{
 		Links: map[string]rest.Link{
@@ -42,6 +47,7 @@ func (r RootResource) Get(request *http.Request) (interface{}, error) {
 	}, nil
 }
 
+// SubResources creates the routes for all resources.
 func (r *RootResource) SubResources() routing.Matcher {
 	return routing.Sequence(
 		routing.Prefix("/v1", rest.ResourceMatcher(r.version1)),

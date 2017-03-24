@@ -3,6 +3,7 @@ package pgp
 import (
 	"bytes"
 	"crypto"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/openpgp"
@@ -10,19 +11,22 @@ import (
 	"golang.org/x/crypto/openpgp/s2k"
 )
 
-func (s *pgpSecrets) IsLocked() bool {
+func (s *pgpSecrets) IsLocked() (bool, *time.Time) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
 	for _, entity := range s.entities {
 		if entity.PrivateKey != nil && !entity.PrivateKey.Encrypted {
-			return false
+			autolockAt := s.autolocker.GetAutolockAt()
+			return false, &autolockAt
 		}
 	}
-	return true
+	return true, nil
 }
 
 func (s *pgpSecrets) Lock() {
+	s.logger.Info("Locking secrets")
+
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -32,9 +36,11 @@ func (s *pgpSecrets) Lock() {
 			s.purgePrivateKey(subKey.PrivateKey)
 		}
 	}
+	s.autolocker.Cancel()
 }
 
 func (s *pgpSecrets) Unlock(name, email, passphrase string) error {
+	s.logger.Info("Unlocking secrets")
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -63,6 +69,7 @@ func (s *pgpSecrets) Unlock(name, email, passphrase string) error {
 			}
 		}
 	}
+	s.autolocker.Start()
 	return nil
 }
 

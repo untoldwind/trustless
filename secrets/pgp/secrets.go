@@ -3,6 +3,7 @@ package pgp
 import (
 	"bytes"
 	"sync"
+	"time"
 
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
@@ -19,24 +20,26 @@ type pgpSecrets struct {
 	entities      openpgp.EntityList
 	index         *Index
 	masterKeyBits int
+	autolocker    *secrets.Autolocker
 }
 
 // NewPGPSecrets creats a new secrets store based on openpgp
-func NewPGPSecrets(storeURL, nodeID string, masterKeyBits int, logger logging.Logger) (secrets.Secrets, error) {
+func NewPGPSecrets(storeURL, nodeID string, masterKeyBits int, unlockTimout time.Duration, unlockTimeoutHard bool, logger logging.Logger) (secrets.Secrets, error) {
 	store, err := store.NewStore(storeURL, logger)
 	if err != nil {
 		return nil, err
 	}
-	secrets := &pgpSecrets{
+	pgp := &pgpSecrets{
 		store:         store,
 		nodeID:        nodeID,
 		logger:        logger.WithField("package", "secrets"),
 		masterKeyBits: masterKeyBits,
 	}
-	if err := secrets.readRing(); err != nil {
+	pgp.autolocker = secrets.NewAutolocker(pgp, unlockTimout, unlockTimeoutHard)
+	if err := pgp.readRing(); err != nil {
 		return nil, err
 	}
-	return secrets, nil
+	return pgp, nil
 }
 
 func (s *pgpSecrets) IsInitialized() bool {

@@ -32,8 +32,10 @@ func (MasterKeyResource) Self() rest.Link {
 
 // Get the status of the master key
 func (r *MasterKeyResource) Get(request *http.Request) (interface{}, error) {
+	locked, autolockAt := r.secrets.IsLocked()
 	return &api.MasterKey{
-		Locked: r.secrets.IsLocked(),
+		Locked:     locked,
+		AutolockAt: autolockAt,
 	}, nil
 }
 
