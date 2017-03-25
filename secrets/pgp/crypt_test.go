@@ -1,6 +1,7 @@
 package pgp
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -30,7 +31,7 @@ func TestCrypt(t *testing.T) {
 	require.Nil(err)
 	pgpSecrets := _secrets.(*pgpSecrets)
 
-	err = pgpSecrets.Unlock("Tester", "tester@mail.com", "12345678")
+	err = pgpSecrets.Unlock(context.Background(), "Tester", "tester@mail.com", "12345678")
 	require.Nil(err)
 
 	properties := gopter.NewProperties(parameters)

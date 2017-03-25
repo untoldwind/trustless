@@ -1,10 +1,12 @@
 package daemon
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/leanovate/microtools/logging"
 	"github.com/leanovate/microtools/rest"
+	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 )
 
@@ -28,9 +30,28 @@ func (SecretsResource) Self() rest.Link {
 	return rest.SimpleLink("/v1/secrets")
 }
 
+// Create adds a secret to the store
+func (r *SecretsResource) Create(request *http.Request) (rest.Resource, error) {
+	var secretCurrent api.SecretCurrent
+
+	defer request.Body.Close()
+	decoder := json.NewDecoder(request.Body)
+	if err := decoder.Decode(&secretCurrent); err != nil {
+		return nil, rest.BadRequest.WithDetails(err.Error())
+	}
+	if secretCurrent.Current == nil {
+		return nil, rest.BadRequest.WithDetails("No current secret")
+	}
+
+	if err := r.secrets.Add(request.Context(), secretCurrent.ID, secretCurrent.Type, *secretCurrent.Current); err != nil {
+		return nil, err
+	}
+	return NewSecretResource(r.secrets, secretCurrent.ID, r.logger), nil
+}
+
 // List all secrets in the store
-func (r *SecretsResource) List(*http.Request) (interface{}, error) {
-	return r.secrets.List()
+func (r *SecretsResource) List(request *http.Request) (interface{}, error) {
+	return r.secrets.List(request.Context())
 }
 
 // FindById looks up a secret by its id

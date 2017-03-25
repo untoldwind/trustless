@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/untoldwind/trustless/api"
-
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -18,7 +16,7 @@ var UnlockCommand = &cli.Command{
 
 func unlockStore(ctx *cli.Context) error {
 	logger := createLogger()
-	client := createClient(logger)
+	client := createRemote(logger)
 
 	status, err := client.Status(createClientContext())
 	if err != nil {
@@ -30,7 +28,7 @@ func unlockStore(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		if err := client.Unlock(createClientContext(), *initialUnlock); err != nil {
+		if err := client.Unlock(createClientContext(), initialUnlock.Name, initialUnlock.Email, initialUnlock.Passphrase); err != nil {
 			return err
 		}
 	} else {
@@ -48,10 +46,7 @@ func unlockStore(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		if err := client.Unlock(createClientContext(), api.MasterKeyUnlock{
-			Identity:   identity,
-			Passphrase: passphrase,
-		}); err != nil {
+		if err := client.Unlock(createClientContext(), identity.Name, identity.Email, passphrase); err != nil {
 			return err
 		}
 	}

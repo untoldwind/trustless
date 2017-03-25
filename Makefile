@@ -1,4 +1,4 @@
-PKGS = ./api/... ./client/... ./commands/... ./config/... ./daemon/... ./secrets/... ./store/... .
+PKGS = ./api/... ./commands/... ./config/... ./daemon/... ./secrets/... ./store/... .
 
 VERSION ?= $(shell date -u +%Y%m%d.%H%M%S)
 

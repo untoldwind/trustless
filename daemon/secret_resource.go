@@ -34,7 +34,7 @@ func (r *SecretResource) Self() rest.Link {
 
 // Get the secret the resource represents
 func (r *SecretResource) Get(request *http.Request) (interface{}, error) {
-	secret, err := r.secrets.Get(r.secretID)
+	secret, err := r.secrets.Get(request.Context(), r.secretID)
 
 	if err == secrets.ErrSecretNotFound {
 		return nil, rest.NotFound

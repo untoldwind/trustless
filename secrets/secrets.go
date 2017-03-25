@@ -1,32 +1,27 @@
 package secrets
 
 import (
-	"time"
+	"context"
 
 	"github.com/untoldwind/trustless/api"
 )
 
 // Secrets is the interface to any secret store implementation
 type Secrets interface {
-	// IsInitialized checks if the store has been initialized yet
-	IsInitialized() bool
-
-	// IsLocked checks if the the store is currently locked.
-	// If the store is unlocked it also returned the timestamp when the store
-	// will autolock again.
-	IsLocked() (bool, *time.Time)
+	// Status gets the current status of the store.
+	Status(ctx context.Context) (*api.Status, error)
 	// Lock the store
-	Lock()
+	Lock(ctx context.Context) error
 	// Unlock the store for a given identity
-	Unlock(name, email, passphrase string) error
+	Unlock(ctx context.Context, name, email, passphrase string) error
 
 	// List all identities that have access to the store
-	Identities() ([]api.Identity, error)
+	Identities(ctx context.Context) ([]api.Identity, error)
 
 	// List all secrets of the store (only references)
-	List() (*api.SecretList, error)
+	List(ctx context.Context) (*api.SecretList, error)
 	// Add a secret to the store
-	Add(id string, secretType api.SecretType, version api.SecretVersion) error
+	Add(ctx context.Context, id string, secretType api.SecretType, version api.SecretVersion) error
 	// Get a secret from the store
-	Get(secretID string) (*api.Secret, error)
+	Get(ctx context.Context, secretID string) (*api.Secret, error)
 }

@@ -17,8 +17,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
-	"github.com/untoldwind/trustless/client"
 	"github.com/untoldwind/trustless/config"
+	"github.com/untoldwind/trustless/secrets"
+	"github.com/untoldwind/trustless/secrets/remote"
 )
 
 var boldRed = color.New(color.FgRed, color.Bold).SprintFunc()
@@ -109,8 +110,8 @@ func writeClientConfig(config *config.CommonConfig) error {
 	return nil
 }
 
-func createClient(logger logging.Logger) *client.Client {
-	return client.NewClient(logger)
+func createRemote(logger logging.Logger) secrets.Secrets {
+	return remote.NewRemoteSecrets(logger)
 }
 
 func createClientContext() context.Context {

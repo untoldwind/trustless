@@ -2,29 +2,48 @@ package pgp
 
 import (
 	"bytes"
+	"context"
 	"crypto"
-	"time"
 
 	"github.com/pkg/errors"
+	"github.com/untoldwind/trustless/api"
+	"github.com/untoldwind/trustless/config"
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/packet"
 	"golang.org/x/crypto/openpgp/s2k"
 )
 
-func (s *pgpSecrets) IsLocked() (bool, *time.Time) {
+func (s *pgpSecrets) Status(ctx context.Context) (*api.Status, error) {
+	if s.isLocked() {
+		return &api.Status{
+			Initialized: len(s.entities) > 0,
+			Locked:      true,
+			Version:     config.Version(),
+		}, nil
+	}
+	autolockAt := s.autolocker.GetAutolockAt()
+
+	return &api.Status{
+		Initialized: true,
+		Locked:      false,
+		AutolockAt:  &autolockAt,
+		Version:     config.Version(),
+	}, nil
+}
+
+func (s *pgpSecrets) isLocked() bool {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
 	for _, entity := range s.entities {
 		if entity.PrivateKey != nil && !entity.PrivateKey.Encrypted {
-			autolockAt := s.autolocker.GetAutolockAt()
-			return false, &autolockAt
+			return false
 		}
 	}
-	return true, nil
+	return true
 }
 
-func (s *pgpSecrets) Lock() {
+func (s *pgpSecrets) Lock(ctx context.Context) error {
 	s.logger.Info("Locking secrets")
 
 	s.lock.Lock()
@@ -37,9 +56,10 @@ func (s *pgpSecrets) Lock() {
 		}
 	}
 	s.autolocker.Cancel()
+	return nil
 }
 
-func (s *pgpSecrets) Unlock(name, email, passphrase string) error {
+func (s *pgpSecrets) Unlock(ctx context.Context, name, email, passphrase string) error {
 	s.logger.Info("Unlocking secrets")
 	s.lock.Lock()
 	defer s.lock.Unlock()

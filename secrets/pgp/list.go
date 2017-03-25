@@ -1,14 +1,16 @@
 package pgp
 
 import (
+	"context"
+
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 )
 
-func (s *pgpSecrets) List() (*api.SecretList, error) {
+func (s *pgpSecrets) List(ctx context.Context) (*api.SecretList, error) {
 	s.logger.Info("List secrets")
 
-	if locked, _ := s.IsLocked(); locked {
+	if s.isLocked() {
 		return nil, secrets.ErrSecretsLocked
 	}
 	if err := s.buildIndex(); err != nil {

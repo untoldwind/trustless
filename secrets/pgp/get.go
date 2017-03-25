@@ -1,13 +1,14 @@
 package pgp
 
 import (
+	"context"
 	"errors"
 
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 )
 
-func (s *pgpSecrets) Get(secretID string) (*api.Secret, error) {
+func (s *pgpSecrets) Get(ctx context.Context, secretID string) (*api.Secret, error) {
 	s.logger.Infof("Get secret %s", secretID)
 
 	if s.index == nil {

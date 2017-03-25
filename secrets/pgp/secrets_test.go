@@ -1,6 +1,7 @@
 package pgp_test
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -22,14 +23,18 @@ func TestSecrets(t *testing.T) {
 	secrets, err := pgp.NewPGPSecrets("file://"+tempDir, "test-client", 1024, 5*time.Minute, false, logger)
 	require.Nil(err)
 
-	require.False(secrets.IsInitialized())
-	require.True(secrets.IsLocked())
+	status, err := secrets.Status(context.Background())
+	require.Nil(err)
+	require.False(status.Initialized)
+	require.True(status.Locked)
 
-	err = secrets.Unlock("Tester", "tester@mail.com", "12345678")
+	err = secrets.Unlock(context.Background(), "Tester", "tester@mail.com", "12345678")
 	require.Nil(err)
 
-	require.False(secrets.IsLocked())
-	require.True(secrets.IsInitialized())
+	status, err = secrets.Status(context.Background())
+	require.Nil(err)
+	require.False(status.Locked)
+	require.True(status.Initialized)
 
 	now := time.Now().Add(-1 * time.Minute)
 	version1 := api.SecretVersion{
@@ -42,10 +47,10 @@ func TestSecrets(t *testing.T) {
 			"password": "supersecret",
 		},
 	}
-	err = secrets.Add("secret1", api.SecretTypeLogin, version1)
+	err = secrets.Add(context.Background(), "secret1", api.SecretTypeLogin, version1)
 	require.Nil(err)
 
-	list, err := secrets.List()
+	list, err := secrets.List(context.Background())
 	require.Nil(err)
 	require.Len(list.AllTags, 2)
 	require.Len(list.Entries, 1)
@@ -64,10 +69,10 @@ func TestSecrets(t *testing.T) {
 			"password": "supersecret2",
 		},
 	}
-	err = secrets.Add("secret1", api.SecretTypeLogin, version2)
+	err = secrets.Add(context.Background(), "secret1", api.SecretTypeLogin, version2)
 	require.Nil(err)
 
-	list, err = secrets.List()
+	list, err = secrets.List(context.Background())
 	require.Nil(err)
 	require.Len(list.AllTags, 2)
 	require.Len(list.Entries, 1)
@@ -75,7 +80,8 @@ func TestSecrets(t *testing.T) {
 	require.Equal(version2.Name, list.Entries[0].Name)
 	require.Equal(version2.Tags, list.Entries[0].Tags)
 
-	actualSecret, err := secrets.Get("secret1")
+	actualSecret, err := secrets.Get(context.Background(), "secret1")
+
 	require.Nil(err)
 	require.Equal("secret1", actualSecret.ID)
 	require.Len(actualSecret.Versions, 2)

@@ -1,4 +1,4 @@
-package client
+package remote
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 // Identities retrieves all known identities that can access the secret store
-func (c *Client) Identities(ctx context.Context) ([]api.Identity, error) {
+func (c *remoteSecrets) Identities(ctx context.Context) ([]api.Identity, error) {
 	result, err := c.get(ctx, "/v1/identities")
 	if err != nil {
 		return nil, err

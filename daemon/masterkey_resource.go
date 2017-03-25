@@ -32,10 +32,13 @@ func (MasterKeyResource) Self() rest.Link {
 
 // Get the status of the master key
 func (r *MasterKeyResource) Get(request *http.Request) (interface{}, error) {
-	locked, autolockAt := r.secrets.IsLocked()
+	status, err := r.secrets.Status(request.Context())
+	if err != nil {
+		return nil, err
+	}
 	return &api.MasterKey{
-		Locked:     locked,
-		AutolockAt: autolockAt,
+		Locked:     status.Locked,
+		AutolockAt: status.AutolockAt,
 	}, nil
 }
 
@@ -48,7 +51,7 @@ func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 	if err := decoder.Decode(&unlock); err != nil {
 		return nil, rest.BadRequest.WithDetails(err.Error())
 	}
-	if err := r.secrets.Unlock(unlock.Name, unlock.Email, unlock.Passphrase); err != nil {
+	if err := r.secrets.Unlock(request.Context(), unlock.Name, unlock.Email, unlock.Passphrase); err != nil {
 		return nil, rest.InternalServerError(err)
 	}
 	return nil, nil
@@ -56,6 +59,6 @@ func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 
 // Delete locks the master key
 func (r *MasterKeyResource) Delete(request *http.Request) (interface{}, error) {
-	r.secrets.Lock()
+	r.secrets.Lock(request.Context())
 	return nil, nil
 }

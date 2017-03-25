@@ -1,4 +1,4 @@
-package client
+package remote
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c *Client) get(ctx context.Context, uri string) ([]byte, error) {
+func (c *remoteSecrets) get(ctx context.Context, uri string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, "http://daemon"+uri, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Create GET request failed")
@@ -19,7 +19,7 @@ func (c *Client) get(ctx context.Context, uri string) ([]byte, error) {
 	return c.doRequest(req.WithContext(ctx))
 }
 
-func (c *Client) post(ctx context.Context, uri string, body []byte) ([]byte, error) {
+func (c *remoteSecrets) post(ctx context.Context, uri string, body []byte) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodPost, "http://daemon"+uri, bytes.NewReader(body))
 	if err != nil {
 		return nil, errors.Wrap(err, "Create POST request failed")
@@ -27,7 +27,7 @@ func (c *Client) post(ctx context.Context, uri string, body []byte) ([]byte, err
 	return c.doRequest(req.WithContext(ctx))
 }
 
-func (c *Client) put(ctx context.Context, uri string, body []byte) ([]byte, error) {
+func (c *remoteSecrets) put(ctx context.Context, uri string, body []byte) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodPut, "http://daemon"+uri, bytes.NewReader(body))
 	if err != nil {
 		return nil, errors.Wrap(err, "Create PUT request failed")
@@ -35,7 +35,7 @@ func (c *Client) put(ctx context.Context, uri string, body []byte) ([]byte, erro
 	return c.doRequest(req.WithContext(ctx))
 }
 
-func (c *Client) delete(ctx context.Context, uri string) ([]byte, error) {
+func (c *remoteSecrets) delete(ctx context.Context, uri string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodDelete, "http://daemon"+uri, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Create DELETE request failed")
@@ -43,7 +43,7 @@ func (c *Client) delete(ctx context.Context, uri string) ([]byte, error) {
 	return c.doRequest(req.WithContext(ctx))
 }
 
-func (c *Client) doRequest(req *http.Request) ([]byte, error) {
+func (c *remoteSecrets) doRequest(req *http.Request) ([]byte, error) {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "perform http request failed")
@@ -61,7 +61,7 @@ func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 	return data, nil
 }
 
-func (c *Client) decodeError(req *http.Request, status int, data []byte) error {
+func (c *remoteSecrets) decodeError(req *http.Request, status int, data []byte) error {
 	var httpError rest.HTTPError
 
 	if err := json.Unmarshal(data, &httpError); err == nil {

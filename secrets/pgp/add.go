@@ -1,12 +1,14 @@
 package pgp
 
 import (
+	"context"
+
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 	"github.com/untoldwind/trustless/store/model"
 )
 
-func (s *pgpSecrets) Add(id string, secretType api.SecretType, version api.SecretVersion) error {
+func (s *pgpSecrets) Add(ctx context.Context, id string, secretType api.SecretType, version api.SecretVersion) error {
 	s.logger.Info("Add secret %s", id)
 
 	secretBlock := &secrets.SecretBlock{

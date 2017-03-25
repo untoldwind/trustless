@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"context"
+
 	"github.com/untoldwind/trustless/daemon"
 	"github.com/untoldwind/trustless/secrets/pgp"
 	cli "gopkg.in/urfave/cli.v2"
@@ -25,7 +27,7 @@ func startDaemon(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	defer secrets.Lock()
+	defer secrets.Lock(context.Background())
 
 	daemon := daemon.NewDaemon(secrets, logger)
 

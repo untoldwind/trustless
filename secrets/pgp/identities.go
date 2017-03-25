@@ -1,8 +1,12 @@
 package pgp
 
-import "github.com/untoldwind/trustless/api"
+import (
+	"context"
 
-func (s *pgpSecrets) Identities() ([]api.Identity, error) {
+	"github.com/untoldwind/trustless/api"
+)
+
+func (s *pgpSecrets) Identities(ctx context.Context) ([]api.Identity, error) {
 	result := make([]api.Identity, 0, len(s.entities))
 	for _, entity := range s.entities {
 		if entity.PrivateKey == nil {

@@ -16,7 +16,7 @@ var InfoCommand = &cli.Command{
 
 func getStatusInfo(ctx *cli.Context) error {
 	logger := createLogger()
-	client := createClient(logger)
+	client := createRemote(logger)
 
 	status, err := client.Status(createClientContext())
 	if err != nil {

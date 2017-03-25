@@ -11,7 +11,7 @@ var LockCommand = &cli.Command{
 
 func lockStore(ctx *cli.Context) error {
 	logger := createLogger()
-	client := createClient(logger)
+	client := createRemote(logger)
 
 	if err := client.Lock(createClientContext()); err != nil {
 		return err

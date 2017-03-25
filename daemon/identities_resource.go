@@ -29,6 +29,6 @@ func (IdentitiesResource) Self() rest.Link {
 }
 
 // List all identities in the store
-func (r *IdentitiesResource) List(*http.Request) (interface{}, error) {
-	return r.secrets.Identities()
+func (r *IdentitiesResource) List(request *http.Request) (interface{}, error) {
+	return r.secrets.Identities(request.Context())
 }
