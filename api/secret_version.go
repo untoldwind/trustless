@@ -17,6 +17,7 @@ type SecretVersion struct {
 	Timestamp   time.Time          `json:"timestamp"`
 	Name        string             `json:"name"`
 	Tags        []string           `json:"tags"`
+	URLs        []string           `json:"urls"`
 	Properties  map[string]string  `json:"properties"`
 	Attachments []SecretAttachment `json:"attachment"`
 	Deleted     bool               `json:"deleted"`

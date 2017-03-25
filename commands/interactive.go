@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/chzyer/readline"
@@ -77,6 +78,22 @@ func readInitialUnlock() (*api.MasterKeyUnlock, error) {
 		},
 		Passphrase: string(pwd1),
 	}, nil
+}
+
+func confirm(prompt string) bool {
+	fmt.Println()
+	rl, err := readline.New(prompt + " [y/N]: ")
+	if err != nil {
+		return false
+	}
+	defer rl.Close()
+
+	answer, err := rl.Readline()
+	if err != nil {
+		return false
+	}
+	answer = strings.ToLower(answer)
+	return answer == "y" || answer == "yes"
 }
 
 func reportStatus(status *api.Status) {

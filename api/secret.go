@@ -10,6 +10,8 @@ const (
 	SecretTypeNote SecretType = "note"
 	// SecretTypeLicence is some kind of software licence (key)
 	SecretTypeLicence SecretType = "licence"
+	// SecretTypePassword is some kind of generic password/key
+	SecretTypePassword SecretType = "password"
 )
 
 // SecretCurrent contains the current (head) version of a secret
