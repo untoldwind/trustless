@@ -104,8 +104,7 @@ func importFile(ctx *cli.Context) error {
 	logger := createLogger()
 	client := createRemote(logger)
 
-	_, err = unlockStore(client)
-	if err != nil {
+	if _, err := unlockStore(client); err != nil {
 		return err
 	}
 
@@ -132,7 +131,7 @@ func importFile(ctx *cli.Context) error {
 		if translated, ok := typeScheme[secretType]; ok {
 			secretType = string(translated)
 		}
-		id, err := importGenerateId(properties)
+		id, err := importGenerateID(properties)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -154,7 +153,7 @@ func importFile(ctx *cli.Context) error {
 	return nil
 }
 
-func importGenerateId(properties map[string]string) (string, error) {
+func importGenerateID(properties map[string]string) (string, error) {
 	hash := sha512.New()
 
 	for name, value := range properties {

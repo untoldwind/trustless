@@ -58,9 +58,8 @@ func TestSecrets(t *testing.T) {
 	require.Equal(version1.Name, list.Entries[0].Name)
 	require.Equal(version1.Tags, list.Entries[0].Tags)
 
-	now.Add(1 * time.Minute)
 	version2 := api.SecretVersion{
-		Timestamp: now,
+		Timestamp: now.Add(1 * time.Minute),
 		Name:      "my-login",
 		Tags:      []string{"private"},
 		Properties: map[string]string{

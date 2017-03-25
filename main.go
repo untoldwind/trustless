@@ -54,6 +54,7 @@ func main() {
 			commands.InfoCommand,
 			commands.LockCommand,
 			commands.UnlockCommand,
+			commands.ListCommand,
 			commands.ImportCommand,
 			commands.DaemonCommand,
 		},

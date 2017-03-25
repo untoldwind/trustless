@@ -31,7 +31,7 @@ func (s SecretVersions) Len() int {
 }
 
 func (s SecretVersions) Less(i, j int) bool {
-	return s[i].Timestamp.Before(s[j].Timestamp)
+	return s[i].Timestamp.After(s[j].Timestamp)
 }
 
 func (s SecretVersions) Swap(i, j int) {

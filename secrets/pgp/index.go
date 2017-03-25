@@ -89,17 +89,27 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secret
 			}
 		}
 	}
+	i.Commits.Add(commitID)
+}
+
+func (s *pgpSecrets) ensureIndex() {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if s.index == nil {
+		s.index = &Index{
+			Entries: map[string]*IndexEntry{},
+			Commits: secrets.IDSet{},
+			Tags:    secrets.IDSet{},
+		}
+	}
 }
 
 func (s *pgpSecrets) buildIndex() error {
 	if s.isLocked() {
 		return secrets.ErrSecretsLocked
 	}
-	s.index = &Index{
-		Entries: map[string]*IndexEntry{},
-		Commits: secrets.IDSet{},
-		Tags:    secrets.IDSet{},
-	}
+	s.ensureIndex()
 	heads, err := s.store.Heads()
 	if err != nil {
 		return err
