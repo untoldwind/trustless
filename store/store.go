@@ -9,20 +9,22 @@ import (
 	"github.com/untoldwind/trustless/store/model"
 )
 
+// Store is the common interface for a backend store.
+// Secrets are stored in encrypted blocks, its the Store's responsibility to
+// do the necessary I/O stuff.
 type Store interface {
 	GetRing() ([]byte, error)
 	StoreRing(raw []byte) error
 
-	Heads() ([]model.Head, error)
-	GetHead(nodeID string) (string, error)
+	ChangeLogs() ([]model.ChangeLog, error)
 
 	AddBlock(block []byte) (string, error)
 	GetBlock(blockID string) ([]byte, error)
 
-	Commit(nodeID string, changes []model.Change) (string, error)
-	GetCommit(commitID string) (*model.Commit, error)
+	Commit(nodeID string, changes []model.Change) error
 }
 
+// NewStore creates a new backend store from a URL.
 func NewStore(storeURLStr string, logger logging.Logger) (Store, error) {
 	storeURL, err := url.Parse(storeURLStr)
 	if err != nil {

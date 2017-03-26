@@ -24,11 +24,15 @@ func (s *pgpSecrets) Add(ctx context.Context, id string, secretType api.SecretTy
 	if err != nil {
 		return err
 	}
-	commitID, err := s.store.Commit(s.nodeID, []model.Change{
+	if err := s.store.Commit(s.nodeID, []model.Change{
 		{Operation: model.ChangeOpAdd, BlockID: blockID},
-	})
+	}); err != nil {
+		return err
+	}
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	if s.index != nil {
-		s.index.registerCommit(commitID, map[string]*secrets.SecretBlock{
+		s.index.registerChanges(map[string]*secrets.SecretBlock{
 			blockID: secretBlock,
 		})
 	}

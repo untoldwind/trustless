@@ -17,10 +17,12 @@ func findConfigPath() string {
 	return filepath.Join(os.Getenv("HOME"), ".trustless")
 }
 
+// DefaultConfigFile gets the default location of the configuration file
 func DefaultConfigFile() string {
 	return filepath.Join(findConfigPath(), "config.yaml")
 }
 
+// DefaultStoreURL gets the default location of the store
 func DefaultStoreURL() string {
-	return "file://" + filepath.Join(findConfigPath(), "store")
+	return "file://" + filepath.Join(os.Getenv("HOME"), ".trustless_store")
 }

@@ -49,41 +49,35 @@ func commonFeatures(t *testing.T, store store.Store) {
 	nodeID := "test-client"
 
 	// Initial heads is empty
-	heads, err := store.Heads()
+	changeLogs, err := store.ChangeLogs()
 	require.Nil(err)
-	require.Len(heads, 0)
-
-	head, err := store.GetHead(nodeID)
-	require.Nil(err)
-	require.Empty(head)
+	require.Len(changeLogs, 0)
 
 	// Commit first block
-	commit1ID := commitRandomBlock(t, store, nodeID)
+	blockID := commitRandomBlock(t, store, nodeID)
 
-	head, err = store.GetHead(nodeID)
+	changeLogs, err = store.ChangeLogs()
 	require.Nil(err)
-	require.Equal(commit1ID, head)
+	require.Len(changeLogs, 1)
+	myChangeLog := changeLogs[0]
+	require.Equal(nodeID, myChangeLog.NodeID)
+	require.Len(myChangeLog.Changes, 1)
+	require.Equal(model.ChangeOpAdd, myChangeLog.Changes[0].Operation)
+	require.Equal(blockID, myChangeLog.Changes[0].BlockID)
 
 	// Commit second block
-	commit2ID := commitRandomBlock(t, store, nodeID)
+	block2ID := commitRandomBlock(t, store, nodeID)
 
-	head, err = store.GetHead(nodeID)
+	changeLogs, err = store.ChangeLogs()
 	require.Nil(err)
-	require.Equal(commit2ID, head)
-
-	commit1, err := store.GetCommit(commit1ID)
-	require.Nil(err)
-	require.Empty(commit1.PrevCommitID)
-
-	commit2, err := store.GetCommit(commit2ID)
-	require.Nil(err)
-	require.Equal(commit2.PrevCommitID, commit1ID)
-
-	heads, err = store.Heads()
-	require.Nil(err)
-	require.Len(heads, 1)
-	require.Equal(nodeID, heads[0].NodeID)
-	require.Equal(commit2ID, heads[0].CommitID)
+	require.Len(changeLogs, 1)
+	myChangeLog = changeLogs[0]
+	require.Equal(nodeID, myChangeLog.NodeID)
+	require.Len(myChangeLog.Changes, 2)
+	require.Equal(model.ChangeOpAdd, myChangeLog.Changes[0].Operation)
+	require.Equal(blockID, myChangeLog.Changes[0].BlockID)
+	require.Equal(model.ChangeOpAdd, myChangeLog.Changes[1].Operation)
+	require.Equal(block2ID, myChangeLog.Changes[1].BlockID)
 }
 
 func commitRandomBlock(t *testing.T, store store.Store, nodeID string) string {
@@ -101,18 +95,10 @@ func commitRandomBlock(t *testing.T, store store.Store, nodeID string) string {
 	require.Nil(err)
 	require.Equal(expectedBlock, actualBlock)
 
-	commitID, err := store.Commit(nodeID, []model.Change{
+	err = store.Commit(nodeID, []model.Change{
 		{Operation: model.ChangeOpAdd, BlockID: blockID},
 	})
 	require.Nil(err)
-	require.NotEmpty(commitID)
 
-	commit, err := store.GetCommit(commitID)
-	require.Nil(err)
-	require.Equal(nodeID, commit.NodeID)
-	require.Len(commit.Changes, 1)
-	require.Equal(model.ChangeOpAdd, commit.Changes[0].Operation)
-	require.Equal(blockID, commit.Changes[0].BlockID)
-
-	return commitID
+	return blockID
 }

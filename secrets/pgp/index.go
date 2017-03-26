@@ -17,7 +17,7 @@ type IndexEntry struct {
 type Index struct {
 	lock          sync.Mutex
 	Entries       map[string]*IndexEntry
-	Commits       secrets.IDSet
+	KnownBlocks   secrets.IDSet
 	Tags          secrets.IDSet
 	DeletedBlocks secrets.IDSet
 }
@@ -42,16 +42,12 @@ func (i *Index) list() *api.SecretList {
 	}
 }
 
-func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secrets.SecretBlock) {
+func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
-	if i.Commits.Contains(commitID) {
-		return
-	}
-
 	for blockID, secretBlock := range changedBlocks {
-		if i.DeletedBlocks.Contains(blockID) {
+		if i.KnownBlocks.Contains(blockID) || i.DeletedBlocks.Contains(blockID) {
 			continue
 		}
 		if secretBlock != nil {
@@ -88,8 +84,8 @@ func (i *Index) registerCommit(commitID string, changedBlocks map[string]*secret
 				}
 			}
 		}
+		i.KnownBlocks.Add(blockID)
 	}
-	i.Commits.Add(commitID)
 }
 
 func (s *pgpSecrets) ensureIndex() {
@@ -98,9 +94,10 @@ func (s *pgpSecrets) ensureIndex() {
 
 	if s.index == nil {
 		s.index = &Index{
-			Entries: map[string]*IndexEntry{},
-			Commits: secrets.IDSet{},
-			Tags:    secrets.IDSet{},
+			Entries:       map[string]*IndexEntry{},
+			KnownBlocks:   secrets.IDSet{},
+			Tags:          secrets.IDSet{},
+			DeletedBlocks: secrets.IDSet{},
 		}
 	}
 }
@@ -110,40 +107,32 @@ func (s *pgpSecrets) buildIndex() error {
 		return secrets.ErrSecretsLocked
 	}
 	s.ensureIndex()
-	heads, err := s.store.Heads()
+	changeLogs, err := s.store.ChangeLogs()
 	if err != nil {
 		return err
 	}
-	for _, head := range heads {
-		commitID := head.CommitID
-		for commitID != "" {
-			if s.index.Commits.Contains(commitID) {
-				break
+	for _, changeLog := range changeLogs {
+		changedBlocks := map[string]*secrets.SecretBlock{}
+		for _, change := range changeLog.Changes {
+			if s.index.KnownBlocks.Contains(change.BlockID) {
+				continue
 			}
-			commit, err := s.store.GetCommit(commitID)
-			if err != nil {
-				return err
-			}
-			changedBlocks := map[string]*secrets.SecretBlock{}
-			for _, change := range commit.Changes {
-				switch change.Operation {
-				case model.ChangeOpAdd:
-					block, err := s.store.GetBlock(change.BlockID)
-					if err != nil {
-						return err
-					}
-					secretBlock, err := s.decryptSecret(block)
-					if err != nil {
-						return err
-					}
-					changedBlocks[change.BlockID] = secretBlock
-				case model.ChangeOpDelete:
-					changedBlocks[change.BlockID] = nil
+			switch change.Operation {
+			case model.ChangeOpAdd:
+				block, err := s.store.GetBlock(change.BlockID)
+				if err != nil {
+					return err
 				}
+				secretBlock, err := s.decryptSecret(block)
+				if err != nil {
+					return err
+				}
+				changedBlocks[change.BlockID] = secretBlock
+			case model.ChangeOpDelete:
+				changedBlocks[change.BlockID] = nil
 			}
-			s.index.registerCommit(commitID, changedBlocks)
-			commitID = commit.PrevCommitID
 		}
+		s.index.registerChanges(changedBlocks)
 	}
 
 	return nil
