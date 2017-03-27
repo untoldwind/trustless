@@ -1,6 +1,9 @@
 package secrets
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/json"
+)
 
 // IDSet is a helper to handie a set of generic ids
 type IDSet map[string]bool
@@ -28,6 +31,33 @@ func (c IDSet) Remove(id string) {
 	delete(c, id)
 }
 
+// Equals compares this id set to another for equality
+func (c IDSet) Equals(other IDSet) bool {
+	for id := range c {
+		if !other.Contains(id) {
+			return false
+		}
+	}
+	for id := range other {
+		if !c.Contains(id) {
+			return false
+		}
+	}
+	return true
+}
+
+func (c IDSet) String() string {
+	buf := bytes.NewBufferString("[")
+	delim := ""
+	for id := range c {
+		buf.WriteString(delim)
+		buf.WriteString(id)
+		delim = " "
+	}
+	buf.WriteString("]")
+	return buf.String()
+}
+
 // MarshalJSON creates a json array of the set
 func (c IDSet) MarshalJSON() ([]byte, error) {
 	ids := make([]string, 0, len(c))
@@ -44,7 +74,8 @@ func (c *IDSet) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &ids); err != nil {
 		return err
 	}
-	c = &IDSet{}
-	c.AddAll(ids)
+	idSet := IDSet{}
+	idSet.AddAll(ids)
+	*c = idSet
 	return nil
 }

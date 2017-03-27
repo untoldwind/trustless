@@ -9,7 +9,8 @@ import (
 	"github.com/untoldwind/trustless/store/model"
 )
 
-func (s *LocaldirStore) Commit(nodeID string, changes []model.Change) error {
+// Commit changes made to the store (i.e. write them the the change log)
+func (s *Store) Commit(nodeID string, changes []model.Change) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -38,8 +39,4 @@ func (s *LocaldirStore) Commit(nodeID string, changes []model.Change) error {
 		}
 	}
 	return nil
-}
-
-func (s *LocaldirStore) changeLogFilename(nodeID string) (string, error) {
-	return filepath.Join(s.baseDir, "logs", nodeID), nil
 }

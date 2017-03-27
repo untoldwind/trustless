@@ -8,11 +8,11 @@ import (
 )
 
 func (s *pgpSecrets) List(ctx context.Context) (*api.SecretList, error) {
-	s.logger.Info("List secrets")
-
 	if s.isLocked() {
 		return nil, secrets.ErrSecretsLocked
 	}
+	s.logger.Info("List secrets")
+
 	if err := s.buildIndex(); err != nil {
 		return nil, err
 	}

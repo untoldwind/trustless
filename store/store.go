@@ -13,14 +13,26 @@ import (
 // Secrets are stored in encrypted blocks, its the Store's responsibility to
 // do the necessary I/O stuff.
 type Store interface {
+	// GetRing retrieves the key ring of the store
 	GetRing() ([]byte, error)
+	// StoreRing stores the key ring of the store
 	StoreRing(raw []byte) error
 
+	// ChangeLogs retrieves the change logs of all nodes
 	ChangeLogs() ([]model.ChangeLog, error)
 
+	// GetIndex retrieves the index block of a node
+	GetIndex(nodeID string) ([]byte, error)
+	// StoreIndex stores the index block of a node
+	StoreIndex(nodeID string, indexBlock []byte) error
+
+	// AddBlock adds a block (of encrypted data) to the store and
+	// return its id
 	AddBlock(block []byte) (string, error)
+	// GetBlock retrieves a block by its id
 	GetBlock(blockID string) ([]byte, error)
 
+	// Commit changes made to the store (i.e. write them the the change log)
 	Commit(nodeID string, changes []model.Change) error
 }
 

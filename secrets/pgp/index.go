@@ -1,6 +1,7 @@
 package pgp
 
 import (
+	"encoding/json"
 	"sort"
 	"sync"
 
@@ -88,29 +89,19 @@ func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 	}
 }
 
-func (s *pgpSecrets) ensureIndex() {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-
-	if s.index == nil {
-		s.index = &Index{
-			Entries:       map[string]*IndexEntry{},
-			KnownBlocks:   secrets.IDSet{},
-			Tags:          secrets.IDSet{},
-			DeletedBlocks: secrets.IDSet{},
-		}
-	}
+func (i *Index) serialize() ([]byte, error) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+	return json.Marshal(i)
 }
 
 func (s *pgpSecrets) buildIndex() error {
-	if s.isLocked() {
-		return secrets.ErrSecretsLocked
-	}
 	s.ensureIndex()
 	changeLogs, err := s.store.ChangeLogs()
 	if err != nil {
 		return err
 	}
+	changed := false
 	for _, changeLog := range changeLogs {
 		changedBlocks := map[string]*secrets.SecretBlock{}
 		for _, change := range changeLog.Changes {
@@ -133,7 +124,64 @@ func (s *pgpSecrets) buildIndex() error {
 			}
 		}
 		s.index.registerChanges(changedBlocks)
+		changed = true
+	}
+	if changed {
+		s.storeIndex()
 	}
 
 	return nil
+}
+
+func (s *pgpSecrets) ensureIndex() {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if s.index == nil {
+		s.index = &Index{
+			Entries:       map[string]*IndexEntry{},
+			KnownBlocks:   secrets.IDSet{},
+			Tags:          secrets.IDSet{},
+			DeletedBlocks: secrets.IDSet{},
+		}
+	}
+}
+
+func (s *pgpSecrets) fetchIndex() {
+	indexBlock, err := s.store.GetIndex(s.nodeID)
+	if err != nil {
+		s.logger.Warnf("Failed to retrieve index block: %v", err)
+		return
+	}
+	if indexBlock == nil {
+		return
+	}
+	indexData, err := s.decryptData(indexBlock)
+	if err != nil {
+		s.logger.Warnf("Failed to decrypt index block: %v", err)
+		return
+	}
+	var index Index
+	if err := json.Unmarshal(indexData, &index); err != nil {
+		s.logger.Warnf("Failed to unmarshal index block: %v", err)
+		return
+	}
+	s.index = &index
+}
+
+func (s *pgpSecrets) storeIndex() {
+	if s.index == nil {
+		return
+	}
+	indexData, err := s.index.serialize()
+	if err != nil {
+		s.logger.Warnf("Failed to marshal index: %v", err)
+		return
+	}
+	indexBlock, err := s.encryptData(indexData)
+	if err != nil {
+		s.logger.Warnf("Failed to encrypt index: %v", err)
+		return
+	}
+	s.store.StoreIndex(s.nodeID, indexBlock)
 }

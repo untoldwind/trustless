@@ -9,6 +9,9 @@ import (
 )
 
 func (s *pgpSecrets) Get(ctx context.Context, secretID string) (*api.Secret, error) {
+	if s.isLocked() {
+		return nil, secrets.ErrSecretsLocked
+	}
 	s.logger.Infof("Get secret %s", secretID)
 
 	if s.index == nil {

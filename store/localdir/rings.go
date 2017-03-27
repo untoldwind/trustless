@@ -8,7 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (s *LocaldirStore) GetRing() ([]byte, error) {
+// GetRing retrieves the key ring of the store
+func (s *Store) GetRing() ([]byte, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -22,7 +23,8 @@ func (s *LocaldirStore) GetRing() ([]byte, error) {
 	return raw, nil
 }
 
-func (s *LocaldirStore) StoreRing(raw []byte) error {
+// StoreRing stores the key ring of the store
+func (s *Store) StoreRing(raw []byte) error {
 	ringFile := filepath.Join(s.baseDir, "ring")
 
 	current, err := s.GetRing()

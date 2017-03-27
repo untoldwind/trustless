@@ -9,6 +9,10 @@ import (
 )
 
 func (s *pgpSecrets) Add(ctx context.Context, id string, secretType api.SecretType, version api.SecretVersion) error {
+	if s.isLocked() {
+		return secrets.ErrSecretsLocked
+	}
+
 	s.logger.Info("Add secret %s", id)
 
 	secretBlock := &secrets.SecretBlock{

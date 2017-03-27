@@ -11,18 +11,22 @@ import (
 	"github.com/pkg/errors"
 )
 
-type LocaldirStore struct {
+// Store is an implementation backed by a local directory
+type Store struct {
 	lock    sync.Mutex
 	baseDir string
 	logger  logging.Logger
 }
 
-func NewLocaldirStore(dirUrl *url.URL, logger logging.Logger) (*LocaldirStore, error) {
-	baseDir := dirUrl.Path
+// NewLocaldirStore creates a new store backed by a local directory
+// Note its save to distribute this directory among several machine via
+// Dropbox, opencloud or similiar
+func NewLocaldirStore(dirURL *url.URL, logger logging.Logger) (*Store, error) {
+	baseDir := dirURL.Path
 	if err := os.MkdirAll(baseDir, 0700); err != nil {
 		return nil, errors.Wrap(err, "Create store directory failed")
 	}
-	return &LocaldirStore{
+	return &Store{
 		baseDir: baseDir,
 		logger:  logger.WithField("package", "store/localdir"),
 	}, nil

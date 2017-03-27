@@ -13,14 +13,7 @@ import (
 	"github.com/untoldwind/trustless/secrets"
 )
 
-func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, error) {
-	if s.isLocked() { // NOTE: Strickly speaking, we can encrypt even if store is locked, future enhancement maybe
-		return nil, secrets.ErrSecretsLocked
-	}
-	content, err := json.Marshal(secretBlock)
-	if err != nil {
-		return nil, errors.Wrap(err, "Json marshal of secret block failed")
-	}
+func (s *pgpSecrets) encryptData(content []byte) ([]byte, error) {
 	block, err := padBlock(content)
 	if err != nil {
 		return nil, err
@@ -42,11 +35,15 @@ func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, er
 	return out.Bytes(), nil
 }
 
-func (s *pgpSecrets) decryptSecret(encrypted []byte) (*secrets.SecretBlock, error) {
-	if s.isLocked() {
-		return nil, secrets.ErrSecretsLocked
+func (s *pgpSecrets) encryptSecret(secretBlock *secrets.SecretBlock) ([]byte, error) {
+	content, err := json.Marshal(secretBlock)
+	if err != nil {
+		return nil, errors.Wrap(err, "Json marshal of secret block failed")
 	}
+	return s.encryptData(content)
+}
 
+func (s *pgpSecrets) decryptData(encrypted []byte) ([]byte, error) {
 	message, err := openpgp.ReadMessage(bytes.NewBuffer(encrypted), s.entities, nil, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Read openpgp message failed")
@@ -55,11 +52,14 @@ func (s *pgpSecrets) decryptSecret(encrypted []byte) (*secrets.SecretBlock, erro
 	if err != nil {
 		return nil, errors.Wrap(err, "Openpgp decrypt failed")
 	}
-	content, err := unpadBlock(block)
+	return unpadBlock(block)
+}
+
+func (s *pgpSecrets) decryptSecret(encrypted []byte) (*secrets.SecretBlock, error) {
+	content, err := s.decryptData(encrypted)
 	if err != nil {
 		return nil, err
 	}
-
 	var secert secrets.SecretBlock
 	if err := json.Unmarshal(content, &secert); err != nil {
 		return nil, errors.Wrap(err, "Json unmarshal failed")

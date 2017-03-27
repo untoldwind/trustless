@@ -11,7 +11,8 @@ import (
 	"github.com/untoldwind/trustless/store/model"
 )
 
-func (s *LocaldirStore) ChangeLogs() ([]model.ChangeLog, error) {
+// ChangeLogs retrieves the change logs of all nodes
+func (s *Store) ChangeLogs() ([]model.ChangeLog, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -41,7 +42,7 @@ func (s *LocaldirStore) ChangeLogs() ([]model.ChangeLog, error) {
 	return result, nil
 }
 
-func (s *LocaldirStore) parseChangeLog(filename string) ([]model.Change, error) {
+func (s *Store) parseChangeLog(filename string) ([]model.Change, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to open changelog: %s", filename)

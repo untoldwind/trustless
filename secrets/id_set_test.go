@@ -55,6 +55,9 @@ func TestCommitSet(t *testing.T) {
 				return "", err
 			}
 
+			if !actual.Commits.Equals(holder.Commits) {
+				return "Sets do not match", nil
+			}
 			return "", nil
 		},
 		gen.SliceOf(gen.Identifier()),

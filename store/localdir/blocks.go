@@ -8,7 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (s *LocaldirStore) AddBlock(block []byte) (string, error) {
+// AddBlock adds a block (of encrypted data) to the store and
+// return its id
+func (s *Store) AddBlock(block []byte) (string, error) {
 	blockID, err := generateID(block)
 	if err != nil {
 		return "", err
@@ -27,7 +29,8 @@ func (s *LocaldirStore) AddBlock(block []byte) (string, error) {
 	return blockID, nil
 }
 
-func (s *LocaldirStore) GetBlock(blockID string) ([]byte, error) {
+// GetBlock retrieves a block by its id
+func (s *Store) GetBlock(blockID string) ([]byte, error) {
 	blockFile, err := s.blockFileName(blockID)
 	if err != nil {
 		return nil, err
@@ -41,7 +44,7 @@ func (s *LocaldirStore) GetBlock(blockID string) ([]byte, error) {
 	return block, nil
 }
 
-func (s *LocaldirStore) blockFileName(blockID string) (string, error) {
+func (s *Store) blockFileName(blockID string) (string, error) {
 	if len(blockID) < 3 {
 		return "", errors.New("BlockID too short")
 	}

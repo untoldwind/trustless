@@ -89,6 +89,7 @@ func (s *pgpSecrets) Unlock(ctx context.Context, name, email, passphrase string)
 			}
 		}
 	}
+	s.fetchIndex()
 	s.autolocker.Start()
 	return nil
 }
