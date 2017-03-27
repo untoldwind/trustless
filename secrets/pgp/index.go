@@ -61,6 +61,7 @@ func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 						Type:      secretBlock.Type,
 						Name:      secretBlock.Version.Name,
 						Tags:      secretBlock.Version.Tags,
+						URLs:      secretBlock.Version.URLs,
 						Timestamp: secretBlock.Version.Timestamp,
 					},
 					Blocks: secrets.IDSet{},
@@ -71,6 +72,7 @@ func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 			if secretBlock.Version.Timestamp.After(entry.Timestamp) {
 				entry.Name = secretBlock.Version.Name
 				entry.Tags = secretBlock.Version.Tags
+				entry.URLs = secretBlock.Version.URLs
 				entry.Timestamp = secretBlock.Version.Timestamp
 			}
 		} else {

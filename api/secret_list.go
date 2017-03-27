@@ -8,6 +8,7 @@ type SecretEntry struct {
 	Name      string     `json:"name"`
 	Type      SecretType `json:"type"`
 	Tags      []string   `json:"tags"`
+	URLs      []string   `json:"urls"`
 	Timestamp time.Time  `json:"timestamp"`
 }
 
