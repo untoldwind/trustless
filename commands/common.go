@@ -54,7 +54,7 @@ func createLogger() logging.Logger {
 		loggingOptions.Level = logging.Debug
 	}
 	return logging.NewLogrusLogger(loggingOptions).
-		WithContext(map[string]interface{}{"process": "deploy-control", "version": config.Version()})
+		WithContext(map[string]interface{}{"process": "trustless", "version": config.Version()})
 }
 
 func readConfig(logger logging.Logger) (*config.CommonConfig, error) {
