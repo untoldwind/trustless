@@ -10,7 +10,7 @@ all: format
 
 install.local: export GOPATH=${PWD}/../../../..
 install.local:
-	@go install -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v github.com/21re/trustless
+	@go install -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v github.com/untoldwind/trustless
 
 format: export GOPATH=${PWD}/../../../..
 format:
