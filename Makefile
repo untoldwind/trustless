@@ -9,8 +9,10 @@ all: format
 	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -i -o bin/trustless github.com/untoldwind/trustless
 
 install.local: export GOPATH=${PWD}/../../../..
-install.local:
-	@go install -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v github.com/untoldwind/trustless
+install.local: all
+	@cp bin/trustless ${HOME}/bin
+	@sed 's:@@@HOME@@@:'"${HOME}"':g' scripts/trustless.service > ${HOME}/.config/systemd/user/trustless.service
+	@systemctl --user daemon-reload
 
 format: export GOPATH=${PWD}/../../../..
 format:

@@ -1,0 +1,9 @@
+[Unit]
+Description=Trustless daemon
+
+[Service]
+Type=simple
+ExecStart=@@@HOME@@@/bin/trustless daemon
+
+[Install]
+WantedBy=default.target
