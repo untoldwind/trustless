@@ -95,6 +95,15 @@ func (s *pgpSecrets) Unlock(ctx context.Context, name, email, passphrase string)
 }
 
 func (s *pgpSecrets) initializeRing(name, email, passphrase string) ([]byte, error) {
+	sha256Id, ok := s2k.HashToHashId(crypto.SHA256)
+	if !ok {
+		return nil, errors.New("SHA256 id not found")
+	}
+	sha512Id, ok := s2k.HashToHashId(crypto.SHA512)
+	if !ok {
+		return nil, errors.New("SHA512 id not found")
+	}
+
 	config := &packet.Config{
 		DefaultHash:   crypto.SHA256,
 		DefaultCipher: packet.CipherAES256,
@@ -105,16 +114,21 @@ func (s *pgpSecrets) initializeRing(name, email, passphrase string) ([]byte, err
 		return nil, errors.Wrap(err, "Failed to generate entity")
 	}
 	for _, id := range entity.Identities {
+		id.SelfSignature.PreferredSymmetric = []uint8{uint8(packet.CipherAES256)}
+		id.SelfSignature.PreferredHash = []uint8{sha512Id, sha256Id}
+
 		if err := id.SelfSignature.SignUserId(id.UserId.Id, entity.PrimaryKey, entity.PrivateKey, config); err != nil {
 			return nil, errors.Wrap(err, "Failed to sign identity")
 		}
 	}
 	for _, subKey := range entity.Subkeys {
+		subKey.Sig.PreferredSymmetric = []uint8{uint8(packet.CipherAES256)}
+		subKey.Sig.PreferredHash = []uint8{sha512Id, sha256Id}
+
 		if err := subKey.Sig.SignKey(subKey.PublicKey, entity.PrivateKey, config); err != nil {
 			return nil, errors.Wrap(err, "Failed to sign identity")
 		}
 	}
-
 	if err := entity.PrivateKey.EncryptWithParameters([]byte(passphrase), packet.CipherAES256, s2k.ModeIterated, s2k.Config{
 		S2KCount: 65536,
 		Hash:     crypto.SHA512,

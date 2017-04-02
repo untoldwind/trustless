@@ -45,9 +45,9 @@ func (s *Store) GetBlock(blockID string) ([]byte, error) {
 }
 
 func (s *Store) blockFileName(blockID string) (string, error) {
-	if len(blockID) < 3 {
+	if len(blockID) < 2 {
 		return "", errors.New("BlockID too short")
 	}
 
-	return filepath.Join(s.baseDir, "blocks", blockID[0:2], blockID), nil
+	return filepath.Join(s.baseDir, "blocks", blockID[0:1], blockID), nil
 }

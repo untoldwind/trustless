@@ -2,7 +2,7 @@ package config
 
 import (
 	"crypto/rand"
-	"crypto/sha512"
+	"crypto/sha256"
 	"encoding/base64"
 	"time"
 
@@ -36,7 +36,7 @@ func generateNodeID() (string, error) {
 	if _, err := rand.Read(jitter); err != nil {
 		return "", errors.Wrap(err, "Secure random failed")
 	}
-	hash := sha512.New()
+	hash := sha256.New()
 	if _, err := hash.Write(jitter); err != nil {
 		return "", errors.Wrap(err, "Hashing failed")
 	}

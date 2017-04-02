@@ -1,8 +1,8 @@
 package localdir
 
 import (
-	"crypto/sha512"
-	"encoding/hex"
+	"crypto/sha256"
+	"encoding/base64"
 	"net/url"
 	"os"
 	"sync"
@@ -33,10 +33,10 @@ func NewLocaldirStore(dirURL *url.URL, logger logging.Logger) (*Store, error) {
 }
 
 func generateID(data []byte) (string, error) {
-	hash := sha512.New()
+	hash := sha256.New()
 	if _, err := hash.Write(data); err != nil {
 		return "", errors.Wrap(err, "Hashing failed")
 	}
 
-	return hex.EncodeToString(hash.Sum(nil)), nil
+	return base64.RawURLEncoding.EncodeToString(hash.Sum(nil)), nil
 }

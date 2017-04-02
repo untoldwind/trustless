@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"crypto/sha512"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/csv"
 	"fmt"
@@ -41,6 +41,7 @@ var typeSchemes = map[string]map[string]api.SecretType{
 		"Softwarelizenz": api.SecretTypeLicence,
 		"Sichere Notiz":  api.SecretTypeNote,
 		"Password":       api.SecretTypePassword,
+		"WLAN-Router":    api.SecretTypeWLAN,
 	},
 }
 
@@ -128,6 +129,9 @@ func importFile(ctx *cli.Context) error {
 			fmt.Printf("Missing name and type information in: %v\n", properties)
 			continue
 		}
+		delete(properties, "name")
+		delete(properties, "type")
+		delete(properties, "Tags")
 		if translated, ok := typeScheme[secretType]; ok {
 			secretType = string(translated)
 		}
@@ -137,10 +141,17 @@ func importFile(ctx *cli.Context) error {
 			continue
 		}
 
+		timestamp := importExtractTimestamp(properties)
+		delete(properties, "createdAt")
+		delete(properties, "modifiedAt")
+
+		urls := strings.Split(properties["urls"], ",")
+		delete(properties, "urls")
+
 		if err := client.Add(createClientContext(), id, api.SecretType(secretType), api.SecretVersion{
-			Timestamp:  importExtractTimestamp(properties),
+			Timestamp:  timestamp,
 			Name:       name,
-			URLs:       strings.Split(properties["urls"], ","),
+			URLs:       urls,
 			Properties: properties,
 		}); err != nil {
 			fmt.Printf("Unable to import: %s\n", name)
@@ -154,7 +165,7 @@ func importFile(ctx *cli.Context) error {
 }
 
 func importGenerateID(properties map[string]string) (string, error) {
-	hash := sha512.New()
+	hash := sha256.New()
 
 	for name, value := range properties {
 		if _, err := hash.Write([]byte(name)); err != nil {
