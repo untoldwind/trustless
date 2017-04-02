@@ -63,6 +63,7 @@ func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 						Tags:      secretBlock.Version.Tags,
 						URLs:      secretBlock.Version.URLs,
 						Timestamp: secretBlock.Version.Timestamp,
+						Deleted:   secretBlock.Version.Deleted,
 					},
 					Blocks: secrets.IDSet{},
 				}
@@ -74,6 +75,7 @@ func (i *Index) registerChanges(changedBlocks map[string]*secrets.SecretBlock) {
 				entry.Tags = secretBlock.Version.Tags
 				entry.URLs = secretBlock.Version.URLs
 				entry.Timestamp = secretBlock.Version.Timestamp
+				entry.Deleted = secretBlock.Version.Deleted
 			}
 		} else {
 			i.DeletedBlocks.Add(blockID)

@@ -10,6 +10,7 @@ type SecretEntry struct {
 	Tags      []string   `json:"tags"`
 	URLs      []string   `json:"urls"`
 	Timestamp time.Time  `json:"timestamp"`
+	Deleted   bool       `json:"deleted"`
 }
 
 // SecretList contains a list of all SecretEntries
