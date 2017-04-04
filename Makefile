@@ -24,7 +24,7 @@ test:
 	@echo "--> Running tests"
 	@go test -v ${PKGS}
 
-cross: bin.linux64 bin.macos
+cross: bin.linux64 bin.macos bin.windows64 bin.windows32
 
 bin.linux64: export GOPATH=${PWD}/../../../..
 bin.linux64: export GOOS=linux
@@ -32,7 +32,7 @@ bin.linux64: export GOARCH=amd64
 bin.linux64:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
-	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-linux-amd64 github.com/21re/trustless
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-linux-amd64 github.com/untoldwind/trustless
 
 bin.macos: export GOPATH=${PWD}/../../../..
 bin.macos: export GOOS=darwin
@@ -40,7 +40,23 @@ bin.macos: export GOARCH=amd64
 bin.macos:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
-	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-darwin-amd64 github.com/21re/trustless
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-darwin-amd64 github.com/untoldwind/trustless
+
+bin.windows64: export GOPATH=${PWD}/../../../..
+bin.windows64: export GOOS=windows
+bin.windows64: export GOARCH=amd64
+bin.windows64:
+	@mkdir -p bin
+	@echo "--> Running go build ${VERSION}"
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-amd64 github.com/untoldwind/trustless
+
+bin.windows32: export GOPATH=${PWD}/../../../..
+bin.windows32: export GOOS=windows
+bin.windows32: export GOARCH=386
+bin.windows32:
+	@mkdir -p bin
+	@echo "--> Running go build ${VERSION}"
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-x86 github.com/untoldwind/trustless
 
 glide.install:
 	@echo "--> glide install"

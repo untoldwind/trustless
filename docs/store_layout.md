@@ -6,9 +6,9 @@ the following layout:
 | File                 | Criticality    | Description                                                       |
 | -------------------- | -------------- | ----------------------------------------------------------------- |
 | ring                 | VERY IMPORTANT | Contains the pgp key ring (in export format)                      |
-| blocks/<prefix>/<id> | IMPORTANT      | Contains an encrypted secret version                              |
-| index/<node id>      | uncritical     | Contains an encrypted index for a node, will be recreated if lost |
-| logs/<node id>       | uncritical     | Contains change log for each node, can be restored                |
+| blocks/prefix/id     | IMPORTANT      | Contains an encrypted secret version                              |
+| index/nodeId         | uncritical     | Contains an encrypted index for a node, will be recreated if lost |
+| logs/nodeId          | uncritical     | Contains change log for each node, can be restored                |
 
 ## Use with gpg
 
