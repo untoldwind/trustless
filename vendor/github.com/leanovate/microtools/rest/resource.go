@@ -25,27 +25,27 @@ func (ResourceBase) BeforeFilter(resp http.ResponseWriter, req *http.Request) bo
 }
 
 func (ResourceBase) Get(request *http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourceBase) Post(request *http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourceBase) Patch(request *http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourceBase) Update(request *http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourceBase) Delete(request *http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourceBase) SubResources() routing.Matcher {
-	return HttpErrorMatcher(NotFound)
+	return HTTPErrorMatcher(HTTPNotFound)
 }
 
 type LimitedResource struct {
@@ -68,7 +68,7 @@ func ResourceMatcher(resource Resource) routing.Matcher {
 			routing.PUT(restHandler{before: resource.BeforeFilter, handler: resource.Update}),
 			routing.PATCH(restHandler{before: resource.BeforeFilter, handler: resource.Patch}),
 			routing.DELETE(restHandler{before: resource.BeforeFilter, handler: resource.Delete}),
-			HttpErrorMatcher(MethodNotAllowed),
+			HTTPErrorMatcher(HTTPMethodNotAllowed),
 		),
 		resource.SubResources(),
 	)

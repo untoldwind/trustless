@@ -37,7 +37,7 @@ func (r *SecretResource) Get(request *http.Request) (interface{}, error) {
 	secret, err := r.secrets.Get(request.Context(), r.secretID)
 
 	if err == secrets.ErrSecretNotFound {
-		return nil, rest.NotFound
+		return nil, rest.HTTPNotFound
 	} else if err != nil {
 		return nil, err
 	}

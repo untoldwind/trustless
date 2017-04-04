@@ -12,7 +12,7 @@ import (
 
 func TestHttpError(t *testing.T) {
 	Convey("Given an InternalServerError", t, func() {
-		httpErr := rest.InternalServerError(errors.New("Something is wrong"))
+		httpErr := rest.HTTPInternalServerError(errors.New("Something is wrong"))
 
 		Convey("When error is send as json", func() {
 			response := httptest.NewRecorder()

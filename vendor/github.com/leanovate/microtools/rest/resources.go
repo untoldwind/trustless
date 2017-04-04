@@ -23,15 +23,15 @@ func (ResourcesBase) BeforeFilter(resp http.ResponseWriter, req *http.Request) b
 }
 
 func (ResourcesBase) Create(*http.Request) (Resource, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourcesBase) List(*http.Request) (interface{}, error) {
-	return nil, MethodNotAllowed
+	return nil, HTTPMethodNotAllowed
 }
 
 func (ResourcesBase) FindById(id string) (interface{}, error) {
-	return nil, NotFound
+	return nil, HTTPNotFound
 }
 
 type LimitedResources struct {
@@ -51,7 +51,7 @@ func ResourcesMatcher(prefix string, collection Resources) routing.Matcher {
 		routing.StringPart(func(id string) routing.Matcher {
 			result, err := collection.FindById(id)
 			if err != nil {
-				return HttpErrorMatcher(WrapError(err))
+				return HTTPErrorMatcher(WrapError(err))
 			}
 			switch resource := (result).(type) {
 			case Resource:
@@ -59,13 +59,13 @@ func ResourcesMatcher(prefix string, collection Resources) routing.Matcher {
 			case Resources:
 				return ResourcesMatcher("", resource)
 			default:
-				return HttpErrorMatcher(InternalServerError(errors.New("Invalid result")))
+				return HTTPErrorMatcher(HTTPInternalServerError(errors.New("Invalid result")))
 			}
 		}),
 		routing.EndSeq(
 			routing.GET(restHandler{before: collection.BeforeFilter, handler: collection.List}),
 			routing.POST(createHandler{before: collection.BeforeFilter, handler: collection.Create}),
-			HttpErrorMatcher(MethodNotAllowed),
+			HTTPErrorMatcher(HTTPMethodNotAllowed),
 		),
 	)
 }

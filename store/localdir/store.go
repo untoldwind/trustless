@@ -22,7 +22,7 @@ type Store struct {
 // Note its save to distribute this directory among several machine via
 // Dropbox, opencloud or similiar
 func NewLocaldirStore(dirURL *url.URL, logger logging.Logger) (*Store, error) {
-	baseDir := dirURL.Path
+	baseDir := pathFromURL(dirURL)
 	if err := os.MkdirAll(baseDir, 0700); err != nil {
 		return nil, errors.Wrap(err, "Create store directory failed")
 	}

@@ -8,31 +8,51 @@ import (
 	"syscall"
 )
 
+// Logger is a generic logger interface to the different logger implementations
 type Logger interface {
+	// ErrorErr simply logs an error (inclduing stack if created vis pkg/errors)
 	ErrorErr(error)
+	// Errorf logs a formated error message
 	Errorf(format string, args ...interface{})
+	// Error logs an error message
 	Error(args ...interface{})
+	// Warnf logs a formatted warning message
 	Warnf(format string, args ...interface{})
+	// Warn logs a warning message
 	Warn(args ...interface{})
+	// Infof logs a formatted info message
 	Infof(format string, args ...interface{})
+	// Info logs an info message
 	Info(args ...interface{})
+	// Debugf logs a formatted debug message
 	Debugf(format string, args ...interface{})
+	// Debug logs a debug message
 	Debug(args ...interface{})
 
+	// Create a child logger with fields (this field will be added to the fields
+	// of the current logger)
 	WithContext(fields map[string]interface{}) Logger
+	// Create a child logger with an additional field
 	WithField(name, value string) Logger
 }
 
+// Level is an enumeration type of the supported loging levels
 type Level int
 
 const (
+	// Fatal level, is the highest logging level for fatal errors (e.g. panics)
 	Fatal Level = iota
+	// Error level
 	Error
+	// Warn level
 	Warn
+	// Info level
 	Info
+	// Debug level
 	Debug
 )
 
+// Options required to configure a Logger implementation
 type Options struct {
 	Backend   string
 	LogFile   string
@@ -41,6 +61,7 @@ type Options struct {
 	Output    io.Writer
 }
 
+// GetOutput gets the output where the log is written to
 func (o Options) GetOutput() io.Writer {
 	if o.Output != nil {
 		return o.Output
@@ -60,10 +81,12 @@ func (o Options) GetOutput() io.Writer {
 	return os.Stdout
 }
 
+// DefaultOptions common default options
 var DefaultOptions = &Options{
 	Backend: "logrus",
 }
 
+// NewLogger configure a Logger implementation
 func NewLogger(options Options) Logger {
 	switch options.Backend {
 	case "simple":

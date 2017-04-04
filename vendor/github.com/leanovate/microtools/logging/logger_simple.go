@@ -16,6 +16,7 @@ type loggerSimple struct {
 	out    io.Writer
 }
 
+// NewSimpleLogger creates a simple Logger based on the golang log package
 func NewSimpleLogger(options Options) Logger {
 	out := options.GetOutput()
 	return &loggerSimple{
@@ -25,6 +26,9 @@ func NewSimpleLogger(options Options) Logger {
 	}
 }
 
+// NewSimpleLoggerNull create a simple Logger discarding all log entries (i.e.
+// /dev/null). Useful for testing where you do not want to polute testing
+// output with log messages.
 func NewSimpleLoggerNull() Logger {
 	return &loggerSimple{
 		logger: log.New(ioutil.Discard, "", log.LstdFlags),

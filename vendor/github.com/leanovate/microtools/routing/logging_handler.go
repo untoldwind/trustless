@@ -7,6 +7,8 @@ import (
 	"github.com/leanovate/microtools/logging"
 )
 
+var flowIDHeaderNames = []string{"X-Flow-Id"}
+
 type loggingResponseWriter struct {
 	status        int
 	responseBytes int
@@ -52,13 +54,15 @@ func (l *LoggingHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) 
 	}
 	l.delegate.ServeHTTP(loggingResp, req)
 	elapsed := time.Since(start)
+	flowID := flowIDFromHeaders(req)
 	log := l.logger.WithContext(map[string]interface{}{
-		"method": req.Method,
-		"uri":    req.RequestURI,
-		"status": loggingResp.status,
-		"time":   elapsed.String(),
-		"millis": float64(elapsed.Nanoseconds()) / 1000000.0,
-		"bytes":  loggingResp.responseBytes,
+		"method":  req.Method,
+		"uri":     req.RequestURI,
+		"status":  loggingResp.status,
+		"time":    elapsed.String(),
+		"millis":  float64(elapsed.Nanoseconds()) / 1000000.0,
+		"bytes":   loggingResp.responseBytes,
+		"flow_id": flowID,
 	})
 	if loggingResp.status < 300 {
 		log.Info("Request: Success")
@@ -69,4 +73,13 @@ func (l *LoggingHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) 
 	} else {
 		log.Error("Request: Server error")
 	}
+}
+
+func flowIDFromHeaders(req *http.Request) string {
+	for _, headerName := range flowIDHeaderNames {
+		if flowID := req.Header.Get(headerName); flowID != "" {
+			return flowID
+		}
+	}
+	return ""
 }

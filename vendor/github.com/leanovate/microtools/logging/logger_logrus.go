@@ -12,6 +12,8 @@ type logrusLogger struct {
 	fields map[string]interface{}
 }
 
+// NewLogrusLogger creates a Looger implementation based on the famous
+// logrus package
 func NewLogrusLogger(options Options) Logger {
 	backend := logrus.New()
 	backend.Out = options.GetOutput()

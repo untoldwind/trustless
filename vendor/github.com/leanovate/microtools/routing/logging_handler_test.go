@@ -36,6 +36,7 @@ func TestLoggingHander(t *testing.T) {
 		Convey("When GET /therequest is send with OK result", func() {
 			request, err := http.NewRequest("GET", "/therequest", nil)
 			request.RequestURI = "/therequest"
+			request.Header.Add("X-Flow-Id", "flow")
 
 			So(err, ShouldBeNil)
 
@@ -47,6 +48,7 @@ func TestLoggingHander(t *testing.T) {
 			So(buffer.String(), ShouldContainSubstring, "uri=/therequest")
 			So(buffer.String(), ShouldContainSubstring, "status=200")
 			So(buffer.String(), ShouldContainSubstring, "Request: Success")
+			So(buffer.String(), ShouldContainSubstring, "flow_id=flow")
 		})
 
 		Convey("When GET /therequest is send with SEE OTHER result", func() {

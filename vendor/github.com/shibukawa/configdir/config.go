@@ -50,7 +50,10 @@ func (c Config) Open(fileName string) (*os.File, error) {
 }
 
 func (c Config) Create(fileName string) (*os.File, error) {
-	c.MkdirAll()
+	err := c.CreateParentDir(fileName)
+	if err != nil {
+		return nil, err
+	}
 	return os.Create(filepath.Join(c.Path, fileName))
 }
 
@@ -58,8 +61,17 @@ func (c Config) ReadFile(fileName string) ([]byte, error) {
 	return ioutil.ReadFile(filepath.Join(c.Path, fileName))
 }
 
+// CreateParentDir creates the parent directory of fileName inside c. fileName
+// is a relative path inside c, containing zero or more path separators.
+func (c Config) CreateParentDir(fileName string) error {
+	return os.MkdirAll(filepath.Dir(filepath.Join(c.Path, fileName)), 0755)
+}
+
 func (c Config) WriteFile(fileName string, data []byte) error {
-	c.MkdirAll()
+	err := c.CreateParentDir(fileName)
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(filepath.Join(c.Path, fileName), data, 0644)
 }
 

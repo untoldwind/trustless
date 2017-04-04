@@ -37,10 +37,10 @@ func (r *SecretsResource) Create(request *http.Request) (rest.Resource, error) {
 	defer request.Body.Close()
 	decoder := json.NewDecoder(request.Body)
 	if err := decoder.Decode(&secretCurrent); err != nil {
-		return nil, rest.BadRequest.WithDetails(err.Error())
+		return nil, rest.HTTPBadRequest.WithDetails(err.Error())
 	}
 	if secretCurrent.Current == nil {
-		return nil, rest.BadRequest.WithDetails("No current secret")
+		return nil, rest.HTTPBadRequest.WithDetails("No current secret")
 	}
 
 	if err := r.secrets.Add(request.Context(), secretCurrent.ID, secretCurrent.Type, *secretCurrent.Current); err != nil {

@@ -1,14 +1,16 @@
-hash: 43789ff06e5770299c00c426d86d32b15684ffdbe99e48bf24251803261145ce
-updated: 2017-03-14T16:59:16.268178018+01:00
+hash: ecac501fd5acc6662f63cdd8c34d512b1044d0684462b7a1260532e36a67e20f
+updated: 2017-04-04T18:17:52.785118915+02:00
 imports:
 - name: github.com/chzyer/readline
   version: 62c6fe6193755f722b8b8788aa7357be55a50ff1
 - name: github.com/fatih/color
   version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
 - name: github.com/leanovate/microtools
-  version: 9b11166081e9e39dff424a642a77ac706eca0f97
+  version: e7b09151ef9cfe471dbf94bc048f3fcd6784fb9d
   subpackages:
   - logging
+  - rest
+  - routing
 - name: github.com/mattn/go-colorable
   version: d228849504861217f796da67fae4f6e347643f15
 - name: github.com/mattn/go-isatty
@@ -17,9 +19,9 @@ imports:
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/shibukawa/configdir
-  version: f5173a2c50e0358987cec35dfca337496f88f8bf
+  version: e180dbdc8da04c4fa04272e875ce64949f38bd3e
 - name: github.com/Sirupsen/logrus
-  version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: golang.org/x/crypto
   version: 6217826bd297ae6dcdc999a87063952c037bc67e
   repo: https://github.com/untoldwind/crypto
@@ -33,10 +35,11 @@ imports:
   - openpgp/s2k
   - pbkdf2
 - name: golang.org/x/sys
-  version: e24f485414aeafb646f6fca458b0bf869c0880a1
-  repo: https://go.googlesource.com/sys
+  version: 9a7256cb28ed514b4e1e5f68959914c4c28a92e0
   subpackages:
   - unix
+- name: gopkg.in/natefinch/npipe.v2
+  version: c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6
 - name: gopkg.in/urfave/cli.v2
   version: 04b2f4ff79cf1fd71e138bafc67df8bbdb5b81c2
 - name: gopkg.in/yaml.v2
@@ -47,7 +50,7 @@ testImports:
   subpackages:
   - spew
 - name: github.com/leanovate/gopter
-  version: 06434797781a55c24f74d2be922b5217348f5e9d
+  version: 0a692bbdefaf520798e0ecedfac3b86432f4d96e
   subpackages:
   - gen
   - prop

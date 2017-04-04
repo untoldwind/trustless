@@ -49,10 +49,10 @@ func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 	defer request.Body.Close()
 	decoder := json.NewDecoder(request.Body)
 	if err := decoder.Decode(&unlock); err != nil {
-		return nil, rest.BadRequest.WithDetails(err.Error())
+		return nil, rest.HTTPBadRequest.WithDetails(err.Error())
 	}
 	if err := r.secrets.Unlock(request.Context(), unlock.Name, unlock.Email, unlock.Passphrase); err != nil {
-		return nil, rest.InternalServerError(err)
+		return nil, rest.HTTPInternalServerError(err)
 	}
 	return nil, nil
 }

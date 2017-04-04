@@ -17,7 +17,7 @@ func (h restHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprintln(os.Stderr, string(debug.Stack()))
-			InternalServerError(fmt.Errorf("Paniced: %v", r)).Send(resp, encoder)
+			HTTPInternalServerError(fmt.Errorf("Paniced: %v", r)).Send(resp, encoder)
 		}
 	}()
 	var err error
@@ -48,7 +48,7 @@ func (h createHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprintln(os.Stderr, string(debug.Stack()))
-			InternalServerError(fmt.Errorf("Paniced: %v", r)).Send(resp, encoder)
+			HTTPInternalServerError(fmt.Errorf("Paniced: %v", r)).Send(resp, encoder)
 		}
 	}()
 	var err error

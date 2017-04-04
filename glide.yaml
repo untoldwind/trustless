@@ -19,6 +19,7 @@ import:
   version: ^0.0.7
 - package: github.com/chzyer/readline
   version: ^1.4.0
+- package: gopkg.in/natefinch/npipe.v2
 testImport:
 - package: github.com/stretchr/testify
   version: ^1.1.4

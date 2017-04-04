@@ -48,7 +48,7 @@ bin.windows64: export GOARCH=amd64
 bin.windows64:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
-	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-amd64 github.com/untoldwind/trustless
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-amd64.exe github.com/untoldwind/trustless
 
 bin.windows32: export GOPATH=${PWD}/../../../..
 bin.windows32: export GOOS=windows
@@ -56,7 +56,7 @@ bin.windows32: export GOARCH=386
 bin.windows32:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
-	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-x86 github.com/untoldwind/trustless
+	@go build -ldflags "-w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-x86.exe github.com/untoldwind/trustless
 
 glide.install:
 	@echo "--> glide install"
