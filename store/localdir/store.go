@@ -2,7 +2,7 @@ package localdir
 
 import (
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"net/url"
 	"os"
 	"sync"
@@ -38,5 +38,5 @@ func generateID(data []byte) (string, error) {
 		return "", errors.Wrap(err, "Hashing failed")
 	}
 
-	return base64.RawURLEncoding.EncodeToString(hash.Sum(nil)), nil
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }

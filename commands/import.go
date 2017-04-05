@@ -2,8 +2,8 @@ package commands
 
 import (
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/csv"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -177,7 +177,7 @@ func importGenerateID(properties map[string]string) (string, error) {
 		}
 	}
 
-	return base64.RawURLEncoding.EncodeToString(hash.Sum(nil)), nil
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 func importExtractTimestamp(properties map[string]string) time.Time {

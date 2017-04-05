@@ -29,6 +29,7 @@ cross: bin.linux64 bin.macos bin.windows64 bin.windows32
 bin.linux64: export GOPATH=${PWD}/../../../..
 bin.linux64: export GOOS=linux
 bin.linux64: export GOARCH=amd64
+bin.linux64: export CGO_ENABLED=1
 bin.linux64:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
@@ -45,6 +46,7 @@ bin.macos:
 bin.windows64: export GOPATH=${PWD}/../../../..
 bin.windows64: export GOOS=windows
 bin.windows64: export GOARCH=amd64
+bin.windows64: export CGO_ENABLED=1
 bin.windows64:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"
@@ -53,6 +55,7 @@ bin.windows64:
 bin.windows32: export GOPATH=${PWD}/../../../..
 bin.windows32: export GOOS=windows
 bin.windows32: export GOARCH=386
+bin.windows32: export CGO_ENABLED=1
 bin.windows32:
 	@mkdir -p bin
 	@echo "--> Running go build ${VERSION}"

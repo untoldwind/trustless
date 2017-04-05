@@ -3,7 +3,7 @@ package config
 import (
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"time"
 
 	"github.com/pkg/errors"
@@ -41,5 +41,5 @@ func generateNodeID() (string, error) {
 		return "", errors.Wrap(err, "Hashing failed")
 	}
 
-	return base64.RawURLEncoding.EncodeToString(hash.Sum(nil)), nil
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
