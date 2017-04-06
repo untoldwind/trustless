@@ -33,6 +33,8 @@ var schemes = map[string]map[string]string{
 		"Vorname(firstname)":        "firstname",
 		"URL":                       "urls",
 		"Notes":                     "notes",
+		"Version(product_version)":  "productVersion",
+		"Passwort(password)":        "password",
 	},
 }
 
