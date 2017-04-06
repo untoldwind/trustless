@@ -25,7 +25,7 @@ func TestPadding(t *testing.T) {
 			if err != nil {
 				return "", err
 			}
-			if len(padded) < 0x2000 {
+			if len(padded) < 0x400 {
 				return fmt.Sprintf("Too short: %d", len(padded)), nil
 			}
 			unpadded, err := unpadBlock(padded)

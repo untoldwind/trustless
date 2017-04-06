@@ -9,7 +9,7 @@ import (
 
 func padBlock(content []byte) ([]byte, error) {
 	contentSize := len(content)
-	paddedSize := ((contentSize >> 13) + 1) << 13
+	paddedSize := ((contentSize >> 10) + 1) << 10
 	fillSize := paddedSize - contentSize
 	padBytes := make([]byte, fillSize-1)
 
