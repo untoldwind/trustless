@@ -148,8 +148,11 @@ func importFile(ctx *cli.Context) error {
 		delete(properties, "createdAt")
 		delete(properties, "modifiedAt")
 
-		urls := strings.Split(properties["urls"], ",")
-		delete(properties, "urls")
+		var urls []string
+		if urlsStr, ok := properties["urls"]; ok {
+			urls = strings.Split(urlsStr, ",")
+			delete(properties, "urls")
+		}
 
 		if err := client.Add(createClientContext(), id, api.SecretType(secretType), api.SecretVersion{
 			Timestamp:  timestamp,
