@@ -10,7 +10,7 @@ import (
 	"github.com/untoldwind/trustless/api"
 )
 
-func readPassphrase() (string, error) {
+func readPassphrase(prompt string) (string, error) {
 	rl, err := readline.New("")
 	if err != nil {
 		return "", errors.Wrap(err, "Failed to create readline")
@@ -19,7 +19,7 @@ func readPassphrase() (string, error) {
 
 	config := rl.GenPasswordConfig()
 	config.MaskRune = '*'
-	config.Prompt = boldRed("Master Passphrase: ")
+	config.Prompt = boldRed(prompt)
 
 	pwd, err := rl.ReadPasswordWithConfig(config)
 	if err != nil {

@@ -58,7 +58,7 @@ func unlockStore(client secrets.Secrets) (*api.Status, error) {
 		identity := identities[0]
 		fmt.Printf("Name : %s\n", identity.Name)
 		fmt.Printf("Email: %s\n", identity.Email)
-		passphrase, err := readPassphrase()
+		passphrase, err := readPassphrase("Master Passphrase: ")
 		if err != nil {
 			return nil, err
 		}

@@ -24,4 +24,7 @@ type Secrets interface {
 	Add(ctx context.Context, id string, secretType api.SecretType, version api.SecretVersion) error
 	// Get a secret from the store
 	Get(ctx context.Context, secretID string) (*api.Secret, error)
+
+	// EstimateStrength of a passwrd
+	EstimateStrength(ctx context.Context, password string, inputs []string) (*api.PasswordStrength, error)
 }
