@@ -57,6 +57,7 @@ func main() {
 			commands.ListCommand,
 			commands.ImportCommand,
 			commands.EstimateCommand,
+			commands.GenerateCommand,
 			commands.DaemonCommand,
 		},
 	}
