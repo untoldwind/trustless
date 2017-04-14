@@ -54,3 +54,27 @@ func TestCharWithRequired(t *testing.T) {
 		require.True(strings.IndexAny(pwd, "!-+*#_$%&/()=?{}[]()/\\'\"`-,;:.<>") >= 0)
 	}
 }
+
+func TestWords(t *testing.T) {
+	require := require.New(t)
+
+	parameters := api.GenerateParameter{
+		Words: &api.WordsParameter{
+			NumWords: 4,
+			Delim:    ".",
+		},
+	}
+	tries := 100
+
+	if testing.Short() {
+		tries = 10
+	}
+
+	for i := 0; i < tries; i++ {
+		pwd, err := generate.Password(parameters)
+		require.Nil(err)
+
+		require.True(len(pwd) > 4*3)
+		require.Equal(3, strings.Count(pwd, "."))
+	}
+}

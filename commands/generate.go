@@ -9,9 +9,11 @@ import (
 )
 
 var GenerateFlags = struct {
-	Words         bool
-	Length        int
-	CharParameter api.CharsParameter
+	Count          int
+	Words          bool
+	Length         int
+	CharsParameter api.CharsParameter
+	WordsParameter api.WordsParameter
 }{}
 
 var GenerateCommand = &cli.Command{
@@ -19,6 +21,12 @@ var GenerateCommand = &cli.Command{
 	Usage:  "Generate a password",
 	Action: withDetailedErrors(generatePassword),
 	Flags: []cli.Flag{
+		&cli.IntFlag{
+			Name:        "count",
+			Usage:       "Number of passwords to generate (to pick the nicest from)",
+			Value:       10,
+			Destination: &GenerateFlags.Count,
+		},
 		&cli.BoolFlag{
 			Name:        "words",
 			Usage:       "Generate password based on words",
@@ -34,45 +42,51 @@ var GenerateCommand = &cli.Command{
 			Name:        "include-upper",
 			Usage:       "Include upper chars in password",
 			Value:       true,
-			Destination: &GenerateFlags.CharParameter.IncludeUpper,
+			Destination: &GenerateFlags.CharsParameter.IncludeUpper,
 		},
 		&cli.BoolFlag{
 			Name:        "require-upper",
 			Usage:       "Require at least one upper chars in password",
-			Destination: &GenerateFlags.CharParameter.RequireUpper,
+			Destination: &GenerateFlags.CharsParameter.RequireUpper,
 		},
 		&cli.BoolFlag{
 			Name:        "include-number",
 			Usage:       "Include numbers in password",
 			Value:       true,
-			Destination: &GenerateFlags.CharParameter.IncludeNumbers,
+			Destination: &GenerateFlags.CharsParameter.IncludeNumbers,
 		},
 		&cli.BoolFlag{
 			Name:        "require-number",
 			Usage:       "Require at least one number in password",
-			Destination: &GenerateFlags.CharParameter.RequireNumber,
+			Destination: &GenerateFlags.CharsParameter.RequireNumber,
 		},
 		&cli.BoolFlag{
 			Name:        "include-symbols",
 			Usage:       "Include symbols in password",
 			Value:       true,
-			Destination: &GenerateFlags.CharParameter.IncludeSymbols,
+			Destination: &GenerateFlags.CharsParameter.IncludeSymbols,
 		},
 		&cli.BoolFlag{
 			Name:        "require-symbol",
 			Usage:       "Require at least one symbol in password",
-			Destination: &GenerateFlags.CharParameter.RequireSymbol,
+			Destination: &GenerateFlags.CharsParameter.RequireSymbol,
 		},
 		&cli.BoolFlag{
 			Name:        "exclude-similar",
 			Usage:       "Exclude similar chars",
-			Destination: &GenerateFlags.CharParameter.ExcludeSimilar,
+			Destination: &GenerateFlags.CharsParameter.ExcludeSimilar,
 		},
 		&cli.BoolFlag{
 			Name:        "exclude-ambigous",
 			Usage:       "Exclude ambigous chars",
 			Value:       true,
-			Destination: &GenerateFlags.CharParameter.ExcludeAmbiguous,
+			Destination: &GenerateFlags.CharsParameter.ExcludeAmbiguous,
+		},
+		&cli.StringFlag{
+			Name:        "delim",
+			Usage:       "Delimeter for words",
+			Value:       ".",
+			Destination: &GenerateFlags.WordsParameter.Delim,
 		},
 	},
 }
@@ -80,17 +94,20 @@ var GenerateCommand = &cli.Command{
 func generatePassword(ctx *cli.Context) error {
 	var parameters api.GenerateParameter
 	if GenerateFlags.Words {
-
+		parameters.Words = &GenerateFlags.WordsParameter
+		parameters.Words.NumWords = GenerateFlags.Length
 	} else {
-		parameters.Chars = &GenerateFlags.CharParameter
+		parameters.Chars = &GenerateFlags.CharsParameter
 		parameters.Chars.NumChars = GenerateFlags.Length
 	}
 
-	pwd, err := generate.Password(parameters)
-	if err != nil {
-		return err
+	for i := 0; i < GenerateFlags.Count; i++ {
+		pwd, err := generate.Password(parameters)
+		if err != nil {
+			return err
+		}
+		fmt.Println(pwd)
 	}
-	fmt.Println(pwd)
 
 	return nil
 }

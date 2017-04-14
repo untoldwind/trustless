@@ -54,7 +54,7 @@ func generateChars(parameters *api.CharsParameter) (string, error) {
 	if idx < parameters.NumChars {
 		candidates := createBaseSet(parameters)
 		for ; idx < parameters.NumChars; idx++ {
-			picks[idx] = candidates[pool[idx]%uint32(len(candidates))]
+			picks[idx] = candidates[pool[idx]%uint64(len(candidates))]
 		}
 	}
 
@@ -62,7 +62,7 @@ func generateChars(parameters *api.CharsParameter) (string, error) {
 	pool = pool[parameters.NumChars:]
 	result := make([]rune, parameters.NumChars)
 	for i := 0; i < parameters.NumChars; i++ {
-		pickIdx := pool[i] % uint32(len(picks))
+		pickIdx := pool[i] % uint64(len(picks))
 		result[i] = picks[pickIdx]
 		picks = append(picks[:pickIdx], picks[pickIdx+1:]...)
 	}
@@ -97,20 +97,20 @@ func filterSet(candidates []rune, parameters *api.CharsParameter, set string) []
 	return candidates
 }
 
-func pickCharFrom(parameters *api.CharsParameter, set string, pick uint32) rune {
+func pickCharFrom(parameters *api.CharsParameter, set string, pick uint64) rune {
 	candidateSet := make([]rune, 0, len(set))
 	candidateSet = filterSet(candidateSet, parameters, set)
 
-	return candidateSet[pick%uint32(len(candidateSet))]
+	return candidateSet[pick%uint64(len(candidateSet))]
 }
 
-// We use uint32 to ensure a (mostly) equal distribution on modulo operations.
+// We use uint64 to ensure a (mostly) equal distribution on modulo operations.
 // E.g. when picking via from a set of 240 candidates via
 // (random uint8) % 240
 // results in the first 16 candidates to be picked twice as often
 // as the others
-func createRandomPool(size int) ([]uint32, error) {
-	pool := make([]uint32, size)
+func createRandomPool(size int) ([]uint64, error) {
+	pool := make([]uint64, size)
 	if err := binary.Read(rand.Reader, binary.BigEndian, &pool); err != nil {
 		return nil, errors.Wrap(err, "Failed to create random pool")
 	}
