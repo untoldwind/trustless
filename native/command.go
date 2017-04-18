@@ -32,6 +32,7 @@ type Command struct {
 type CommandReply struct {
 	Command CommandName     `json:"command"`
 	Reply   json.RawMessage `json:"response"`
+	Error   string          `json:"error"`
 }
 
 type UnlockArgs struct {
@@ -73,7 +74,7 @@ func readCommand(reader io.Reader) (*Command, error) {
 	return &command, nil
 }
 
-func writeReply(writer io.Writer, command CommandName, reply interface{}) error {
+func writeReply(writer io.Writer, command CommandName, reply interface{}, commandErr error) error {
 	replyRaw, err := json.Marshal(reply)
 	if err != nil {
 		return errors.Wrap(err, "Failed to encode reply")
@@ -81,6 +82,9 @@ func writeReply(writer io.Writer, command CommandName, reply interface{}) error 
 	commandReply := &CommandReply{
 		Command: command,
 		Reply:   json.RawMessage(replyRaw),
+	}
+	if commandErr != nil {
+		commandReply.Error = commandErr.Error()
 	}
 	message, err := json.Marshal(commandReply)
 	if err != nil {

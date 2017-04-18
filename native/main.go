@@ -25,12 +25,11 @@ func main() {
 		if command == nil {
 			os.Exit(0)
 		}
-		reply, err := process(command, secrets)
-		if err != nil {
+		reply, commandErr := process(command, secrets)
+		if commandErr != nil {
 			logger.ErrorErr(err)
-			os.Exit(1)
 		}
-		if err := writeReply(os.Stdout, command.Command, reply); err != nil {
+		if err := writeReply(os.Stdout, command.Command, reply, commandErr); err != nil {
 			logger.ErrorErr(err)
 			os.Exit(1)
 		}
