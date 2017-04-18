@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/leanovate/microtools/logging"
 	"github.com/untoldwind/trustless/secrets"
@@ -15,6 +16,17 @@ func createRemote(logger logging.Logger) secrets.Secrets {
 func main() {
 	logger := createLogger()
 	secrets := createRemote(logger)
+
+	defer func() {
+		if err := recover(); err != nil {
+			trace := make([]byte, 8192)
+			count := runtime.Stack(trace, true)
+			logger.Error(err)
+			logger.Error(string(trace[0:count]))
+			os.Exit(1)
+		}
+	}()
+
 	logger.Info("Started trustless-native")
 	for {
 		command, err := readCommand(os.Stdin)
@@ -27,7 +39,7 @@ func main() {
 		}
 		reply, commandErr := process(command, secrets)
 		if commandErr != nil {
-			logger.ErrorErr(err)
+			logger.ErrorErr(commandErr)
 		}
 		if err := writeReply(os.Stdout, command.Command, reply, commandErr); err != nil {
 			logger.ErrorErr(err)

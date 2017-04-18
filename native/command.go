@@ -75,9 +75,14 @@ func readCommand(reader io.Reader) (*Command, error) {
 }
 
 func writeReply(writer io.Writer, command CommandName, reply interface{}, commandErr error) error {
-	replyRaw, err := json.Marshal(reply)
-	if err != nil {
-		return errors.Wrap(err, "Failed to encode reply")
+	var err error
+	var replyRaw []byte
+
+	if reply != nil {
+		replyRaw, err = json.Marshal(reply)
+		if err != nil {
+			return errors.Wrap(err, "Failed to encode reply")
+		}
 	}
 	commandReply := &CommandReply{
 		Command: command,

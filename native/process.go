@@ -15,13 +15,19 @@ func process(command *Command, secrets secrets.Secrets) (interface{}, error) {
 	case StatusCommand:
 		return secrets.Status(context.Background())
 	case LockCommand:
-		return nil, secrets.Lock(context.Background())
+		if err := secrets.Lock(context.Background()); err != nil {
+			return nil, err
+		}
+		return secrets.Status(context.Background())
 	case UnlockCommand:
 		var unlockArgs UnlockArgs
 		if err := json.Unmarshal(command.Args, &unlockArgs); err != nil {
 			return nil, errors.Wrap(err, "Failed to unmarshal unlockArgs")
 		}
-		return nil, secrets.Unlock(context.Background(), unlockArgs.Name, unlockArgs.Email, unlockArgs.Passphrase)
+		if err := secrets.Unlock(context.Background(), unlockArgs.Name, unlockArgs.Email, unlockArgs.Passphrase); err != nil {
+			return nil, err
+		}
+		return secrets.Status(context.Background())
 	case IdentitiesCommand:
 		return secrets.Identities(context.Background())
 	case ListCommand:
