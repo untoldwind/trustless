@@ -7,8 +7,8 @@ import (
 	"github.com/untoldwind/trustless/api"
 )
 
-func (c *pgpSecrets) EstimateStrength(ctx context.Context, password string, inputs []string) (*api.PasswordStrength, error) {
-	result := zxcvbn.PasswordStrength(password, inputs)
+func (c *pgpSecrets) EstimateStrength(ctx context.Context, estimate api.PasswordEstimate) (*api.PasswordStrength, error) {
+	result := zxcvbn.PasswordStrength(estimate.Password, estimate.Inputs)
 
 	return &api.PasswordStrength{
 		Entropy:          result.Entropy,

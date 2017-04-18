@@ -1,10 +1,10 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/untoldwind/trustless/api"
-	"github.com/untoldwind/trustless/secrets/generate"
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -92,6 +92,9 @@ var GenerateCommand = &cli.Command{
 }
 
 func generatePassword(ctx *cli.Context) error {
+	logger := createLogger()
+	client := createRemote(logger)
+
 	var parameters api.GenerateParameter
 	if GenerateFlags.Words {
 		parameters.Words = &GenerateFlags.WordsParameter
@@ -102,7 +105,7 @@ func generatePassword(ctx *cli.Context) error {
 	}
 
 	for i := 0; i < GenerateFlags.Count; i++ {
-		pwd, err := generate.Password(parameters)
+		pwd, err := client.GeneratePassword(context.Background(), parameters)
 		if err != nil {
 			return err
 		}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/untoldwind/trustless/api"
+
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -22,7 +24,9 @@ func estimatePassword(ctx *cli.Context) error {
 		return err
 	}
 
-	result, err := client.EstimateStrength(context.Background(), password, nil)
+	result, err := client.EstimateStrength(context.Background(), api.PasswordEstimate{
+		Password: password,
+	})
 
 	fmt.Printf("Entropy  : %f\n", result.Entropy)
 	fmt.Printf("Cracktime: %f (%s)\n", result.CrackTime, result.CrackTimeDisplay)

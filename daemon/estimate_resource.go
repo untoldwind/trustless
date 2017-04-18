@@ -33,5 +33,5 @@ func (r *EstimateResource) Post(request *http.Request) (interface{}, error) {
 		return nil, rest.HTTPBadRequest.WithDetails(err.Error())
 	}
 
-	return r.secrets.EstimateStrength(request.Context(), estimate.Password, estimate.Inputs)
+	return r.secrets.EstimateStrength(request.Context(), estimate)
 }

@@ -26,5 +26,8 @@ type Secrets interface {
 	Get(ctx context.Context, secretID string) (*api.Secret, error)
 
 	// EstimateStrength of a passwrd
-	EstimateStrength(ctx context.Context, password string, inputs []string) (*api.PasswordStrength, error)
+	EstimateStrength(ctx context.Context, estimate api.PasswordEstimate) (*api.PasswordStrength, error)
+
+	// GeneratePassword generates a password
+	GeneratePassword(ctx context.Context, parameter api.GenerateParameter) (string, error)
 }

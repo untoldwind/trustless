@@ -22,6 +22,7 @@ const (
 	AddCommand        CommandName = "add"
 	GetCommand        CommandName = "get"
 	EstimateCommand   CommandName = "estimate"
+	GenerateCommand   CommandName = "generate"
 )
 
 type Command struct {
@@ -49,11 +50,6 @@ type AddArgs struct {
 
 type GetArgs struct {
 	ID string `json:"id"`
-}
-
-type EstimateArgs struct {
-	Password string   `json:"password"`
-	Inputs   []string `json:"inputs"`
 }
 
 func readCommand(reader io.Reader) (*Command, error) {

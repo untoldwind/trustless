@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/pkg/errors"
+	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 )
 
@@ -45,11 +46,17 @@ func process(command *Command, secrets secrets.Secrets) (interface{}, error) {
 		}
 		return secrets.Get(context.Background(), getArgs.ID)
 	case EstimateCommand:
-		var estimateArgs EstimateArgs
-		if err := json.Unmarshal(command.Args, &estimateArgs); err != nil {
+		var estimate api.PasswordEstimate
+		if err := json.Unmarshal(command.Args, &estimate); err != nil {
 			return nil, errors.Wrap(err, "Failed to unmarshal estimateArgs")
 		}
-		return secrets.EstimateStrength(context.Background(), estimateArgs.Password, estimateArgs.Inputs)
+		return secrets.EstimateStrength(context.Background(), estimate)
+	case GenerateCommand:
+		var parameter api.GenerateParameter
+		if err := json.Unmarshal(command.Args, &parameter); err != nil {
+			return nil, errors.Wrap(err, "Failed to unmarshal parameter")
+		}
+		return secrets.GeneratePassword(context.Background(), parameter)
 	}
 	return nil, nil
 }

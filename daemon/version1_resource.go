@@ -18,6 +18,7 @@ type Version1Resource struct {
 	identitiesResource *IdentitiesResource
 	secretsResource    *SecretsResource
 	estimateResource   *EstimateResource
+	generateResource   *GenerateResource
 }
 
 // NewVersion1Resource creates a new Version1Resource
@@ -28,6 +29,7 @@ func NewVersion1Resource(secrets secrets.Secrets, logger logging.Logger) *Versio
 		identitiesResource: NewIdentitiesResource(secrets, logger),
 		secretsResource:    NewSecretsResource(secrets, logger),
 		estimateResource:   NewEstimateResource(secrets),
+		generateResource:   NewGenerateResource(secrets),
 	}
 }
 
@@ -45,6 +47,7 @@ func (r Version1Resource) Get(request *http.Request) (interface{}, error) {
 			"identities": r.identitiesResource.Self(),
 			"secrets":    r.secretsResource.Self(),
 			"estimate":   r.estimateResource.Self(),
+			"generate":   r.generateResource.Self(),
 		},
 	}, nil
 }
@@ -56,5 +59,6 @@ func (r Version1Resource) SubResources() routing.Matcher {
 		rest.ResourcesMatcher("/identities", r.identitiesResource),
 		rest.ResourcesMatcher("/secrets", r.secretsResource),
 		routing.Prefix("/estimate", rest.ResourceMatcher(r.estimateResource)),
+		routing.Prefix("/generate", rest.ResourceMatcher(r.generateResource)),
 	)
 }
