@@ -19,7 +19,7 @@ type Secrets interface {
 	Identities(ctx context.Context) ([]api.Identity, error)
 
 	// List all secrets of the store (only references)
-	List(ctx context.Context) (*api.SecretList, error)
+	List(ctx context.Context, filter api.SecretListFilter) (*api.SecretList, error)
 	// Add a secret to the store
 	Add(ctx context.Context, id string, secretType api.SecretType, version api.SecretVersion) error
 	// Get a secret from the store

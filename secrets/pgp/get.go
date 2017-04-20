@@ -8,6 +8,10 @@ import (
 	"github.com/untoldwind/trustless/secrets"
 )
 
+var estimateFields = []string{
+	"password",
+}
+
 func (s *pgpSecrets) Get(ctx context.Context, secretID string) (*api.Secret, error) {
 	if s.isLocked() {
 		return nil, secrets.ErrSecretsLocked
@@ -32,6 +36,7 @@ func (s *pgpSecrets) Get(ctx context.Context, secretID string) (*api.Secret, err
 			ID:   entry.ID,
 			Type: entry.Type,
 		},
+		PasswordStrengths: map[string]*api.PasswordStrength{},
 	}
 
 	for blockID := range entry.Blocks {
@@ -54,6 +59,20 @@ func (s *pgpSecrets) Get(ctx context.Context, secretID string) (*api.Secret, err
 	result.Versions.Sort()
 	if len(result.Versions) > 0 {
 		result.Current = result.Versions[0]
+		for _, estimateField := range estimateFields {
+			if value, ok := result.Current.Properties[estimateField]; ok {
+				inputs := result.Current.URLs
+				inputs = append(inputs, result.Current.Name)
+				passwordStrength, err := s.EstimateStrength(ctx, api.PasswordEstimate{
+					Password: value,
+					Inputs:   inputs,
+				})
+				if err != nil {
+					s.logger.ErrorErr(err)
+				}
+				result.PasswordStrengths[estimateField] = passwordStrength
+			}
+		}
 	}
 	s.autolocker.Reset()
 	return result, nil

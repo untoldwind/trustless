@@ -50,7 +50,7 @@ func TestSecrets(t *testing.T) {
 	err = secrets.Add(context.Background(), "secret1", api.SecretTypeLogin, version1)
 	require.Nil(err)
 
-	list, err := secrets.List(context.Background())
+	list, err := secrets.List(context.Background(), api.SecretListFilter{})
 	require.Nil(err)
 	require.Len(list.AllTags, 2)
 	require.Len(list.Entries, 1)
@@ -71,7 +71,7 @@ func TestSecrets(t *testing.T) {
 	err = secrets.Add(context.Background(), "secret1", api.SecretTypeLogin, version2)
 	require.Nil(err)
 
-	list, err = secrets.List(context.Background())
+	list, err = secrets.List(context.Background(), api.SecretListFilter{})
 	require.Nil(err)
 	require.Len(list.AllTags, 2)
 	require.Len(list.Entries, 1)

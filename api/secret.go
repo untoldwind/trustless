@@ -26,6 +26,6 @@ type SecretCurrent struct {
 // Secret holds all information of a secret (including all previous versions)
 type Secret struct {
 	SecretCurrent
-	Versions          SecretVersions              `json:"versions"`
-	PasswordStrengths map[string]PasswordStrength `json:"password_strengths"`
+	Versions          SecretVersions               `json:"versions"`
+	PasswordStrengths map[string]*PasswordStrength `json:"password_strengths"`
 }

@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 
+	"github.com/untoldwind/trustless/api"
+
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -20,7 +22,7 @@ func listSecrets(ctx *cli.Context) error {
 		return err
 	}
 
-	secrets, err := client.List(createClientContext())
+	secrets, err := client.List(createClientContext(), api.SecretListFilter{})
 	if err != nil {
 		return err
 	}

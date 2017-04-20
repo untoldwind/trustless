@@ -51,7 +51,12 @@ func (r *SecretsResource) Create(request *http.Request) (rest.Resource, error) {
 
 // List all secrets in the store
 func (r *SecretsResource) List(request *http.Request) (interface{}, error) {
-	return r.secrets.List(request.Context())
+	return r.secrets.List(request.Context(), api.SecretListFilter{
+		URL:  request.FormValue("url"),
+		Tag:  request.FormValue("tag"),
+		Type: api.SecretType(request.FormValue("type")),
+		Name: request.FormValue("name"),
+	})
 }
 
 // FindById looks up a secret by its id

@@ -32,7 +32,11 @@ func process(command *Command, secrets secrets.Secrets) (interface{}, error) {
 	case IdentitiesCommand:
 		return secrets.Identities(context.Background())
 	case ListCommand:
-		return secrets.List(context.Background())
+		var listFilter api.SecretListFilter
+		if err := json.Unmarshal(command.Args, &listFilter); err != nil {
+			return nil, errors.Wrap(err, "Failed to unmarshal listFilter")
+		}
+		return secrets.List(context.Background(), listFilter)
 	case AddCommand:
 		var addArgs AddArgs
 		if err := json.Unmarshal(command.Args, &addArgs); err != nil {
