@@ -37,7 +37,7 @@ func main() {
 		if command == nil {
 			os.Exit(0)
 		}
-		reply, commandErr := process(command, secrets)
+		reply, commandErr := process(command, secrets, logger)
 		if commandErr != nil {
 			logger.ErrorErr(commandErr)
 		}

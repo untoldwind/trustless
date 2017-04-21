@@ -13,18 +13,20 @@ func (c *remoteSecrets) List(ctx context.Context, filter api.SecretListFilter) (
 	listURL := &url.URL{
 		Path: "/v1/secrets",
 	}
+	query := listURL.Query()
 	if filter.Name != "" {
-		listURL.Query().Add("name", filter.Name)
+		query.Add("name", filter.Name)
 	}
 	if filter.Tag != "" {
-		listURL.Query().Add("tag", filter.Tag)
+		query.Add("tag", filter.Tag)
 	}
 	if filter.Type != "" {
-		listURL.Query().Add("type", string(filter.Type))
+		query.Add("type", string(filter.Type))
 	}
 	if filter.URL != "" {
-		listURL.Query().Add("url", filter.URL)
+		query.Add("url", filter.URL)
 	}
+	listURL.RawQuery = query.Encode()
 
 	result, err := c.get(ctx, listURL.String())
 	if err != nil {

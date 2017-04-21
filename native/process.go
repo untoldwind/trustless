@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
 )
 
-func process(command *Command, secrets secrets.Secrets) (interface{}, error) {
+func process(command *Command, secrets secrets.Secrets, logger logging.Logger) (interface{}, error) {
 	switch command.Command {
 	case PingCommand:
 		return "pong", nil
