@@ -27,6 +27,7 @@ func (s *pgpSecrets) List(ctx context.Context, filter api.SecretListFilter) (*ap
 			filtered = append(filtered, entry)
 		}
 	}
+	secrets.EntrySortNameAsc(filtered)
 	return &api.SecretList{
 		AllTags: list.AllTags,
 		Entries: filtered,
