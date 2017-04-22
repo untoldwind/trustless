@@ -8,10 +8,11 @@ import (
 
 // SecretListFilter filter options to query secret list
 type SecretListFilter struct {
-	URL  string     `json:"url,omitempty"`
-	Tag  string     `json:"tag,omitempty"`
-	Type SecretType `json:"type,omitempty"`
-	Name string     `json:"name,omitempty"`
+	URL     string     `json:"url,omitempty"`
+	Tag     string     `json:"tag,omitempty"`
+	Type    SecretType `json:"type,omitempty"`
+	Name    string     `json:"name,omitempty"`
+	Deleted bool       `json:"deleted,omitempty"`
 }
 
 // SecretEntry is a reference to a stored secret
@@ -62,6 +63,9 @@ func (e *SecretEntry) Matches(filter SecretListFilter) bool {
 		return false
 	}
 	if filter.Type != "" && e.Type != filter.Type {
+		return false
+	}
+	if !filter.Deleted && e.Deleted {
 		return false
 	}
 	return true

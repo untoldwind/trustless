@@ -26,6 +26,9 @@ func (c *remoteSecrets) List(ctx context.Context, filter api.SecretListFilter) (
 	if filter.URL != "" {
 		query.Add("url", filter.URL)
 	}
+	if filter.Deleted {
+		query.Add("deleted", "true")
+	}
 	listURL.RawQuery = query.Encode()
 
 	result, err := c.get(ctx, listURL.String())
