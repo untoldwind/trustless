@@ -3,5 +3,5 @@
   "description": "Trustless",
   "path": "@@@HOME@@@/bin/trustless-native",
   "type": "stdio",
-  "allowed_origins": [ "chrome-extension://jianghlhnmoajfechganmiojaeijecbf/" ]
+  "allowed_origins": [ "chrome-extension://lmgogjpmnmaffejfaipokliedoippppg/" ]
 }
