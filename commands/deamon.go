@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 
+	"github.com/untoldwind/trustless/config"
 	"github.com/untoldwind/trustless/daemon"
 	"github.com/untoldwind/trustless/secrets/pgp"
 	cli "gopkg.in/urfave/cli.v2"
@@ -18,7 +19,7 @@ var DaemonCommand = &cli.Command{
 func startDaemon(ctx *cli.Context) error {
 	logger := createLogger()
 
-	config, err := readConfig(logger)
+	config, err := config.ReadConfig(GlobalFlags.ConfigFile, logger)
 	if err != nil {
 		return err
 	}
