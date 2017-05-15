@@ -5,15 +5,33 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+
+	"github.com/leanovate/microtools/logging"
 )
 
 func dialDaemon(ctx context.Context, network, address string) (net.Conn, error) {
-	var location string
-
-	location = filepath.Join(os.Getenv("HOME"), ".trustless", "daemon.sock")
+	location := remoteLocation()
 
 	return net.DialUnix("unix", nil, &net.UnixAddr{
 		Net:  "unix",
 		Name: location,
 	})
+}
+
+func remoteLocation() string {
+	return filepath.Join(os.Getenv("HOME"), ".trustless", "daemon.sock")
+}
+
+func remoteAvailable(logger logging.Logger) bool {
+	location := remoteLocation()
+
+	logger.Debugf("Check unix socket at: %s", location)
+
+	if _, err := os.Stat(location); os.IsNotExist(err) {
+		return false
+	} else if err != nil {
+		logger.ErrorErr(err)
+		return false
+	}
+	return true
 }

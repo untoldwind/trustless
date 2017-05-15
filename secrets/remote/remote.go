@@ -13,6 +13,12 @@ type remoteSecrets struct {
 	httpClient *http.Client
 }
 
+// RemoteAvailable checks if a remote store is available, i.e. if there is
+// a running daemon.
+func RemoteAvailable(logger logging.Logger) bool {
+	return remoteAvailable(logger)
+}
+
 // NewRemoteSecrets creates a new remote secrets store. This is the client-side
 // counterpart of the daemon api
 func NewRemoteSecrets(logger logging.Logger) secrets.Secrets {
