@@ -1,5 +1,5 @@
-hash: c6984a9b9b0f392ad6e241d2813bbed77f04037f89aaa4b8887a7f1dda410211
-updated: 2017-04-10T19:02:08.632570832+02:00
+hash: c0260f6ef3361b2339e2585e46f4bbf11094a00379b0d88b1ee829820f17bc97
+updated: 2017-05-15T08:30:23.548297099+02:00
 imports:
 - name: github.com/chzyer/readline
   version: 62c6fe6193755f722b8b8788aa7357be55a50ff1
@@ -16,6 +16,17 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
+- name: github.com/nbutton23/zxcvbn-go
+  version: a22cb81b2ecdde8b68e9ffb8824731cbf88e1de4
+  subpackages:
+  - adjacency
+  - data
+  - entropy
+  - frequency
+  - match
+  - matching
+  - scoring
+  - utils/math
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/shibukawa/configdir
@@ -42,7 +53,7 @@ imports:
 - name: gopkg.in/natefinch/npipe.v2
   version: c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6
 - name: gopkg.in/urfave/cli.v2
-  version: 04b2f4ff79cf1fd71e138bafc67df8bbdb5b81c2
+  version: 61c3eb6ba1da1df17cd50f1456a9252d92bf5edd
 - name: gopkg.in/yaml.v2
   version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports:
@@ -55,8 +66,6 @@ testImports:
   subpackages:
   - gen
   - prop
-- name: github.com/nbutton23/zxcvbn-go
-  version: a22cb81b2ecdde8b68e9ffb8824731cbf88e1de4
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
