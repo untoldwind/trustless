@@ -77,4 +77,4 @@ release: cross
 	@echo "--> github-release"
 	@go get github.com/c4milo/github-release
 	@go build -v -o bin/github-release github.com/c4milo/github-release
-	@bin/github-release 21re/trustless ${VERSION} master ${VERSION} 'bin/trustless-*'
+	@bin/github-release untoldwind/trustless ${VERSION} master ${VERSION} 'bin/trustless-*'
