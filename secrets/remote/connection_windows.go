@@ -14,10 +14,11 @@ func dialDaemon(ctx context.Context, network, address string) (net.Conn, error) 
 }
 
 func remoteAvailable(logger logging.Logger) bool {
-	conn, err := npipe.Dial("\\\\.\\pipe\\trustless")
+	listener, err := npipe.Listen("\\\\.\\pipe\\trustless")
 	if err != nil {
-		return false
+		return true
 	}
-	defer conn.Close()
+	defer listener.Close()
+
 	return false
 }
