@@ -127,8 +127,10 @@ func (s *pgpSecrets) buildIndex() error {
 				changedBlocks[change.BlockID] = nil
 			}
 		}
-		s.index.registerChanges(changedBlocks)
-		changed = true
+		if len(changedBlocks) > 0 {
+			s.index.registerChanges(changedBlocks)
+			changed = true
+		}
 	}
 	if changed {
 		s.storeIndex()
