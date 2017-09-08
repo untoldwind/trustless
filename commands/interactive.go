@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func readPassphrase(prompt string) (string, error) {
-	rl, err := readline.New("")
+	rl, err := readline.NewEx(&readline.Config{Prompt: "", Stdout: os.Stderr})
 	if err != nil {
 		return "", errors.Wrap(err, "Failed to create readline")
 	}

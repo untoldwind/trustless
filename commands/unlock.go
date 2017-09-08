@@ -3,6 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
@@ -56,8 +57,8 @@ func unlockStore(client secrets.Secrets) (*api.Status, error) {
 			return nil, errors.New("There are no identities")
 		}
 		identity := identities[0]
-		fmt.Printf("Name : %s\n", identity.Name)
-		fmt.Printf("Email: %s\n", identity.Email)
+		fmt.Fprintf(os.Stderr, "Name : %s\n", identity.Name)
+		fmt.Fprintf(os.Stderr, "Email: %s\n", identity.Email)
 		passphrase, err := readPassphrase("Master Passphrase: ")
 		if err != nil {
 			return nil, err
