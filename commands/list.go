@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	fzf "github.com/junegunn/fzf/src"
+	"github.com/junegunn/fzf/src/tui"
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/config"
 	"github.com/untoldwind/trustless/secrets"
@@ -21,7 +22,8 @@ var ListCommand = &cli.Command{
 }
 
 type secretsCommand struct {
-	secrets secrets.Secrets
+	secrets  secrets.Secrets
+	property string
 }
 
 func (s *secretsCommand) GetPreview(stripAnsi bool, delimiter fzf.Delimiter, query string, allItems []*fzf.Item) string {
@@ -58,11 +60,11 @@ func (s *secretsCommand) Execute(withStdio bool, stripAnsi bool, delimiter fzf.D
 		return
 	}
 	secretID := strings.Split(allItems[0].AsString(false), "\000")[0]
-	_, err := s.secrets.Get(context.Background(), secretID)
+	secret, err := s.secrets.Get(context.Background(), secretID)
 	if err != nil {
 
 	}
-	fmt.Fprintf(os.Stdout, "Bla")
+	fmt.Fprintf(os.Stdout, secret.Current.Properties[s.property])
 }
 
 func listSecrets(ctx *cli.Context) error {
@@ -85,6 +87,24 @@ func listSecrets(ctx *cli.Context) error {
 	opts.Delimiter.Str = &delimter
 	opts.WithNth = []fzf.Range{{Begin: 2, End: 2}}
 	opts.Preview.Command = &secretsCommand{secrets: client}
+	opts.Printer = func(item string) {
+		secretID := strings.Split(item, "\000")[0]
+		secret, err := client.Get(context.Background(), secretID)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		fmt.Fprintln(os.Stdout, secret.Current.Properties["username"])
+		fmt.Fprintln(os.Stdout, secret.Current.Properties["password"])
+	}
+	opts.Keymap[tui.CtrlSpace] = []fzf.Action{
+		{Type: fzf.ActionTypeExecute, Command: &secretsCommand{secrets: client, property: "username"}},
+		{Type: fzf.ActionTypeAbort},
+	}
+	opts.Keymap[tui.AltSpace] = []fzf.Action{
+		{Type: fzf.ActionTypeExecute, Command: &secretsCommand{secrets: client, property: "password"}},
+		{Type: fzf.ActionTypeAbort},
+	}
 
 	go func() {
 		for _, entry := range secrets.Entries {

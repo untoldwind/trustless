@@ -1,21 +1,41 @@
-hash: c0260f6ef3361b2339e2585e46f4bbf11094a00379b0d88b1ee829820f17bc97
-updated: 2017-05-15T08:30:23.548297099+02:00
+hash: fc0f1a1bd51907a125e42e7d5d039aa6f4d101627a5f960eab9281b60f5276e7
+updated: 2017-09-09T15:28:47.109490795+02:00
 imports:
 - name: github.com/chzyer/readline
   version: 62c6fe6193755f722b8b8788aa7357be55a50ff1
 - name: github.com/fatih/color
-  version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
+  version: 570b54cabe6b8eb0bc2dfce68d964677d63b5260
+- name: github.com/gdamore/encoding
+  version: b23993cbb6353f0e6aa98d0ee318a34728f628b9
+- name: github.com/gdamore/tcell
+  version: 44772c121bb7838819d3ba4a7e84c0c2d617328e
+  subpackages:
+  - encoding
+- name: github.com/junegunn/fzf
+  version: 6db1136a6cd9e4054a5b723e7ba4fc16645980c7
+  repo: https://github.com/untoldwind/fzf
+  subpackages:
+  - src
+  - src/algo
+  - src/tui
+  - src/util
 - name: github.com/leanovate/microtools
   version: e7b09151ef9cfe471dbf94bc048f3fcd6784fb9d
   subpackages:
   - logging
   - rest
   - routing
+- name: github.com/lucasb-eyer/go-colorful
+  version: c900de9dbbc73129068f5af6a823068fc5f2308c
 - name: github.com/mattn/go-colorable
-  version: d228849504861217f796da67fae4f6e347643f15
+  version: 167de6bfdfba052fa6b2d3664c8f5272e23c9072
 - name: github.com/mattn/go-isatty
   version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
+- name: github.com/mattn/go-runewidth
+  version: 14207d285c6c197daabb5c9793d63e7af9ab2d50
+- name: github.com/mattn/go-shellwords
+  version: 02e3cf038dcea8290e44424da473dd12be796a8a
 - name: github.com/nbutton23/zxcvbn-go
   version: a22cb81b2ecdde8b68e9ffb8824731cbf88e1de4
   subpackages:
@@ -34,7 +54,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: golang.org/x/crypto
-  version: 6217826bd297ae6dcdc999a87063952c037bc67e
+  version: ""
   repo: https://github.com/untoldwind/crypto
   subpackages:
   - cast5
@@ -45,15 +65,28 @@ imports:
   - openpgp/packet
   - openpgp/s2k
   - pbkdf2
+  - ssh/terminal
 - name: golang.org/x/sys
   version: e24f485414aeafb646f6fca458b0bf869c0880a1
   repo: https://go.googlesource.com/sys
   subpackages:
   - unix
+- name: golang.org/x/text
+  version: 4ee4af566555f5fbe026368b75596286a312663a
+  subpackages:
+  - encoding
+  - encoding/charmap
+  - encoding/internal
+  - encoding/internal/identifier
+  - encoding/japanese
+  - encoding/korean
+  - encoding/simplifiedchinese
+  - encoding/traditionalchinese
+  - transform
 - name: gopkg.in/natefinch/npipe.v2
   version: c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6
 - name: gopkg.in/urfave/cli.v2
-  version: 61c3eb6ba1da1df17cd50f1456a9252d92bf5edd
+  version: 50a0fdeea6330854c7b05371cce1fac8c7e636d2
 - name: gopkg.in/yaml.v2
   version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports:

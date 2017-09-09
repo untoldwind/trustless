@@ -8,6 +8,8 @@ import:
   subpackages:
   - pbkdf2
   - openpgp
+- package: github.com/junegunn/fzf/src
+  repo: https://github.com/untoldwind/fzf
 - package: github.com/fatih/color
   version: ^1.4.1
 - package: github.com/shibukawa/configdir
