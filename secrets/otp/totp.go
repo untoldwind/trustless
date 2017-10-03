@@ -79,6 +79,16 @@ func (o *TOTP) MaxDuration() time.Duration {
 	return o.TimeStep
 }
 
+func (o *TOTP) GetEncodedSecret() string {
+	return base32.StdEncoding.EncodeToString(o.secretKey)
+}
+
+func (o *TOTP) SetEncodedSecret(secret string) error {
+	var err error
+	o.secretKey, err = base32.StdEncoding.DecodeString(secret)
+	return err
+}
+
 func (o *TOTP) GetUserCode() (string, time.Duration) {
 	unixTime := o.Time().Unix()
 	t := unixTime / int64(o.TimeStep/time.Second)

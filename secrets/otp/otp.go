@@ -21,6 +21,8 @@ type OTP interface {
 	GetUserCode() (string, time.Duration)
 	// MaxDuration return the maximum duration a userCode might be valid
 	MaxDuration() time.Duration
+	GetEncodedSecret() string
+	SetEncodedSecret(secret string) error
 	// GetURL returns otpauth url
 	GetURL() *url.URL
 }
