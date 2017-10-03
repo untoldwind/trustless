@@ -24,7 +24,10 @@ func TestParse(t *testing.T) {
 		return time.Unix(1507030530, 0)
 	}
 
-	code, err := topt.GetUserCode()
-	require.Nil(err)
+	code, _ := topt.GetUserCode()
 	require.Equal("676940", code)
+
+	genUrl := topt.GetURL()
+	require.NotNil(genUrl)
+	require.Equal("otpauth://totp/ACME%20Co:john@example.com?algorithm=SHA1&digits=6&issuer=ACME+Co&period=30&secret=MBUO5TLQRRQU4ZFZZE4Q47NY5RAKUXLN", genUrl.String())
 }

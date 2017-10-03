@@ -18,9 +18,11 @@ type OTP interface {
 	// Authenticate verifies the OTP userCode.
 	Authenticate(userCode string) bool
 	// GetUserCode returns the current OTP userCode.
-	GetUserCode() (string, error)
+	GetUserCode() (string, time.Duration)
+	// MaxDuration return the maximum duration a userCode might be valid
+	MaxDuration() time.Duration
 	// GetURL returns otpauth url
-	GetURL() (*url.URL, error)
+	GetURL() *url.URL
 }
 
 func ParseURL(urlStr string) (OTP, error) {
@@ -35,7 +37,7 @@ func ParseURL(urlStr string) (OTP, error) {
 	if len(values["secret"]) == 0 {
 		return nil, errors.Errorf("No secret")
 	}
-	secret, err := base32.StdEncoding.DecodeString(strings.ToUpper(values["secret"][0]))
+	secret, err := base32.StdEncoding.DecodeString(strings.ToUpper(values.Get("secret")))
 	if err != nil {
 		return nil, errors.Wrap(err, "Invalid secret")
 	}
@@ -43,25 +45,23 @@ func ParseURL(urlStr string) (OTP, error) {
 	if len(otpauthURL.Path) > 0 {
 		label = otpauthURL.Path[1:]
 	}
-	var issuer string
-	if issuers := values["issuer"]; len(issuers) > 0 {
-		issuer = issuers[0]
-	}
-	var hash func() hash.Hash = sha1.New
-	if algorithm := values["algorithm"]; len(algorithm) > 0 {
-		switch algorithm[0] {
-		case "SHA1":
-		case "SHA256":
-			hash = sha256.New
-		case "SHA512":
-			hash = sha512.New
-		default:
-			return nil, errors.Errorf("Invalid algorithm: %s", algorithm[0])
-		}
+	issuer := values.Get("issuer")
+	var hash func() hash.Hash
+	switch values.Get("algorithm") {
+	case "":
+		hash = sha1.New
+	case "SHA1":
+		hash = sha1.New
+	case "SHA256":
+		hash = sha256.New
+	case "SHA512":
+		hash = sha512.New
+	default:
+		return nil, errors.Errorf("Invalid algorithm: %s", values.Get("algorithm"))
 	}
 	digits := 6
-	if digitsParam := values["digits"]; len(digitsParam) > 0 {
-		digits, err = strconv.Atoi(digitsParam[0])
+	if digitsParam := values.Get("digits"); len(digitsParam) > 0 {
+		digits, err = strconv.Atoi(digitsParam)
 		if err != nil {
 			return nil, errors.Wrap(err, "Invalid digits")
 		}
@@ -75,8 +75,8 @@ func ParseURL(urlStr string) (OTP, error) {
 		totp.Hash = hash
 		totp.Digits = uint8(digits)
 
-		if period := values["period"]; len(period) > 0 {
-			seconds, err := strconv.Atoi(period[0])
+		if period := values.Get("period"); len(period) > 0 {
+			seconds, err := strconv.Atoi(period)
 			if err != nil {
 				return nil, errors.Wrap(err, "Invalid period")
 			}

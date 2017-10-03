@@ -3,6 +3,7 @@ package otp
 import (
 	"crypto/hmac"
 	"crypto/sha1"
+	"encoding/base32"
 	"fmt"
 	"hash"
 	"net/url"
@@ -74,16 +75,44 @@ func (o *TOTP) Authenticate(userCode string) bool {
 	return false
 }
 
-func (o *TOTP) GetUserCode() (string, error) {
-	t := o.Time().Unix() / int64(o.TimeStep/time.Second)
+func (o *TOTP) MaxDuration() time.Duration {
+	return o.TimeStep
+}
+
+func (o *TOTP) GetUserCode() (string, time.Duration) {
+	unixTime := o.Time().Unix()
+	t := unixTime / int64(o.TimeStep/time.Second)
+
+	validFor := (t+1)*int64(o.TimeStep/time.Second) - unixTime
 
 	code := o.calculateCode(t)
 
-	return fmt.Sprintf("%06d", code), nil
+	return fmt.Sprintf("%06d", code), time.Duration(validFor) * time.Second
 }
 
-func (o *TOTP) GetURL() (*url.URL, error) {
-	return nil, nil
+func (o *TOTP) GetURL() *url.URL {
+	values := make(url.Values, 0)
+
+	values.Set("secret", base32.StdEncoding.EncodeToString(o.secretKey))
+	if o.Issuer != "" {
+		values.Set("issuer", o.Issuer)
+	}
+	values.Set("digits", strconv.Itoa(int(o.Digits)))
+	values.Set("period", strconv.Itoa(int(o.TimeStep/time.Second)))
+	switch o.Hash().Size() {
+	case 20:
+		values.Set("algorithm", "SHA1")
+	case 32:
+		values.Set("algorithm", "SHA256")
+	case 64:
+		values.Set("algorithm", "SHA512")
+	}
+	return &url.URL{
+		Scheme:   "otpauth",
+		Host:     "totp",
+		Path:     "/" + o.Label,
+		RawQuery: values.Encode(),
+	}
 }
 
 func (o *TOTP) calculateCode(time int64) int64 {
