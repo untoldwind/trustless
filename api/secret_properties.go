@@ -7,8 +7,7 @@ type SecretProperty struct {
 	Display   string
 	MultiLine bool
 	Blurred   bool
-	Enum      []string
-	Default   string
+	OTPParams bool
 }
 
 type SecretPropertyList []SecretProperty
@@ -25,7 +24,7 @@ var PropertyNotes = SecretProperty{Name: "notes", Display: "Notes", MultiLine: t
 var PropertyRegCode = SecretProperty{Name: "regCode", Display: "Licence code", MultiLine: true}
 var PropertyRegName = SecretProperty{Name: "regName", Display: "Licenced to"}
 var PropertyProductVersion = SecretProperty{Name: "productVersion", Display: "Version"}
-var PropertyTOTPUrl = SecretProperty{Name: "totpUrl", Display: "TOTP Url", Blurred: true}
+var PropertyTOTPUrl = SecretProperty{Name: "totpUrl", Display: "TOTP Url", OTPParams: true}
 
 var SecretProperties = SecretPropertyList{
 	PropertyUsername,
@@ -47,8 +46,8 @@ var SecretTypes = []SecretTypeDefinition{
 	{Type: SecretTypeLogin, Display: "Login", Properties: []SecretProperty{
 		PropertyUsername,
 		PropertyPassword,
-		PropertyNotes,
 		PropertyTOTPUrl,
+		PropertyNotes,
 	}},
 	{Type: SecretTypeNote, Display: "Note", Properties: []SecretProperty{
 		PropertyNotes,
