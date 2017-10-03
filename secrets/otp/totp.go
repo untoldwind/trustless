@@ -8,6 +8,7 @@ import (
 	"hash"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -85,7 +86,7 @@ func (o *TOTP) GetEncodedSecret() string {
 
 func (o *TOTP) SetEncodedSecret(secret string) error {
 	var err error
-	o.secretKey, err = base32.StdEncoding.DecodeString(secret)
+	o.secretKey, err = base32.StdEncoding.DecodeString(strings.ToUpper(secret))
 	return err
 }
 
