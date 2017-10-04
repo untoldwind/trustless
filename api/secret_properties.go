@@ -29,6 +29,7 @@ var PropertyTOTPUrl = SecretProperty{Name: "totpUrl", Display: "TOTP Url", OTPPa
 var SecretProperties = SecretPropertyList{
 	PropertyUsername,
 	PropertyPassword,
+	PropertyTOTPUrl,
 	PropertySID,
 	PropertyNotes,
 	PropertyRegName,
