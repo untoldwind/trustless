@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -17,13 +16,14 @@ type SecretListFilter struct {
 
 // SecretEntry is a reference to a stored secret
 type SecretEntry struct {
-	ID        string     `json:"id"`
-	Name      string     `json:"name"`
-	Type      SecretType `json:"type"`
-	Tags      []string   `json:"tags"`
-	URLs      []string   `json:"urls"`
-	Timestamp time.Time  `json:"timestamp"`
-	Deleted   bool       `json:"deleted"`
+	ID             string     `json:"id"`
+	Name           string     `json:"name"`
+	NameHighlights []int      `json:"nameHighlights"`
+	Type           SecretType `json:"type"`
+	Tags           []string   `json:"tags"`
+	URLs           []string   `json:"urls"`
+	Timestamp      time.Time  `json:"timestamp"`
+	Deleted        bool       `json:"deleted"`
 }
 
 func (e *SecretEntry) HasTag(tag string) bool {
@@ -50,25 +50,6 @@ func (e *SecretEntry) MatchesURL(urlStr string) bool {
 		}
 	}
 	return false
-}
-
-func (e *SecretEntry) Matches(filter SecretListFilter) bool {
-	if filter.Name != "" && !strings.Contains(e.Name, filter.Name) {
-		return false
-	}
-	if filter.Tag != "" && !e.HasTag(filter.Tag) {
-		return false
-	}
-	if filter.URL != "" && !e.MatchesURL(filter.URL) {
-		return false
-	}
-	if filter.Type != "" && e.Type != filter.Type {
-		return false
-	}
-	if !filter.Deleted && e.Deleted {
-		return false
-	}
-	return true
 }
 
 // SecretList contains a list of all SecretEntries
