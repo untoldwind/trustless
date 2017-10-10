@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
+	"github.com/untoldwind/trustless/secrets/otp"
 )
 
 func process(command *Command, secrets secrets.Secrets, logger logging.Logger) (interface{}, error) {
@@ -50,6 +52,28 @@ func process(command *Command, secrets secrets.Secrets, logger logging.Logger) (
 			return nil, errors.Wrap(err, "Failed to unmarshal getArgs")
 		}
 		return secrets.Get(context.Background(), getArgs.ID)
+	case GetOTPCommand:
+		var getOTPArgs GetOTPArgs
+		if err := json.Unmarshal(command.Args, &getOTPArgs); err != nil {
+			return nil, errors.Wrap(err, "Failed to unmarshal getOTPArgs")
+		}
+		secret, err := secrets.Get(context.Background(), getOTPArgs.ID)
+		if err != nil {
+			return nil, err
+		}
+		otpUrl, ok := secret.Current.Properties[api.PropertyTOTPUrl.Name]
+		if !ok {
+			return nil, errors.Errorf("No OTP url")
+		}
+		otp, err := otp.ParseURL(otpUrl)
+		if err != nil {
+			return nil, err
+		}
+		userCode, validFor := otp.GetUserCode()
+		return &GetOTPReply{
+			UserCode: userCode,
+			ValidFor: int64(validFor / time.Second),
+		}, nil
 	case EstimateCommand:
 		var estimate api.PasswordEstimate
 		if err := json.Unmarshal(command.Args, &estimate); err != nil {

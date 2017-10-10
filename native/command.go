@@ -21,6 +21,7 @@ const (
 	ListCommand       CommandName = "list"
 	AddCommand        CommandName = "add"
 	GetCommand        CommandName = "get"
+	GetOTPCommand     CommandName = "getOTP"
 	EstimateCommand   CommandName = "estimate"
 	GenerateCommand   CommandName = "generate"
 )
@@ -50,6 +51,15 @@ type AddArgs struct {
 
 type GetArgs struct {
 	ID string `json:"id"`
+}
+
+type GetOTPArgs struct {
+	ID string `json:"id"`
+}
+
+type GetOTPReply struct {
+	UserCode string `json:"userCode`
+	ValidFor int64  `json:"validFor"`
 }
 
 func readCommand(reader io.Reader) (*Command, error) {
