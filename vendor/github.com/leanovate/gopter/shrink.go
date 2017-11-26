@@ -1,7 +1,18 @@
 package gopter
 
-// Shrink is a stream of shrinked down values
-// Once the result of a shrink is false, it is considered to be exhausted
+import (
+	"fmt"
+	"reflect"
+)
+
+// Shrink is a stream of shrinked down values.
+// Once the result of a shrink is false, it is considered to be exhausted.
+// Important notes for implementors:
+//   * Ensure that the returned stream is finite, even though shrinking will
+//     eventually be aborted, infinite streams may result in very slow running
+//     test.
+//   * Ensure that modifications to the returned value will not affect the
+//     internal state of your Shrink. If in doubt return by value not by reference
 type Shrink func() (interface{}, bool)
 
 // Filter creates a shrink filtered by a condition
@@ -18,12 +29,26 @@ func (s Shrink) Filter(condition func(interface{}) bool) Shrink {
 	}
 }
 
-// Map creates a shrink by applying a converter to each element of a shrink
-func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
+// Map creates a shrink by applying a converter to each element of a shrink.
+// f: has to be a function with one parameter (matching the generated value) and a single return.
+func (s Shrink) Map(f interface{}) Shrink {
+	mapperVal := reflect.ValueOf(f)
+	mapperType := mapperVal.Type()
+
+	if mapperVal.Kind() != reflect.Func {
+		panic(fmt.Sprintf("Param of Map has to be a func, but is %v", mapperType.Kind()))
+	}
+	if mapperType.NumIn() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one param, but is %v", mapperType.NumIn()))
+	}
+	if mapperType.NumOut() != 1 {
+		panic(fmt.Sprintf("Param of Map has to be a func with one return value, but is %v", mapperType.NumOut()))
+	}
+
 	return func() (interface{}, bool) {
 		value, ok := s()
 		if ok {
-			return f(value), ok
+			return mapperVal.Call([]reflect.Value{reflect.ValueOf(value)})[0].Interface(), ok
 		}
 		return nil, false
 	}
@@ -32,7 +57,7 @@ func (s Shrink) Map(f func(interface{}) interface{}) Shrink {
 // All collects all shrinks as a slice. Use with care as this might create
 // large results depending on the complexity of the shrink
 func (s Shrink) All() []interface{} {
-	result := make([]interface{}, 0)
+	result := []interface{}{}
 	value, ok := s()
 	for ok {
 		result = append(result, value)
@@ -125,6 +150,10 @@ func (e *elementShrink) Next() (interface{}, bool) {
 	return shrinked, true
 }
 
+// CombineShrinker create a shrinker by combining a list of shrinkers.
+// The resulting shrinker will shrink an []interface{} where each element will be shrinked by
+// the corresonding shrinker in 'shrinkers'.
+// This method is implicitly used by CombineGens.
 func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 	return func(v interface{}) Shrink {
 		values := v.([]interface{})
@@ -144,10 +173,13 @@ func CombineShrinker(shrinkers ...Shrinker) Shrinker {
 	}
 }
 
+// NoShrink is an empty shrink.
 var NoShrink = Shrink(func() (interface{}, bool) {
 	return nil, false
 })
 
+// NoShrinker is a shrinker for NoShrink, i.e. a Shrinker that will not shrink any values.
+// This is the default Shrinker if none is provided.
 var NoShrinker = Shrinker(func(value interface{}) Shrink {
 	return NoShrink
 })

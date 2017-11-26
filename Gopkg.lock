@@ -45,10 +45,10 @@
   source = "github.com/untoldwind/fzf"
 
 [[projects]]
+  branch = "master"
   name = "github.com/leanovate/gopter"
   packages = [".","gen","prop"]
-  revision = "43cf95bdcf8d4b73624e7e71fec73765eb0a92dc"
-  version = "v0.1"
+  revision = "bc22a5c65d130b2f63f3572121ec03117d060039"
 
 [[projects]]
   branch = "master"
@@ -162,6 +162,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "369119880c71eaf6ab88f417bff5db1de041a132ae7293c0befe358fbea40a95"
+  inputs-digest = "4edaa104a7e85a43a3e5001c9836f6e3ded7370d1e7a8c1d5d54c41230369cc3"
   solver-name = "gps-cdcl"
   solver-version = 1

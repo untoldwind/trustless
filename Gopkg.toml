@@ -20,7 +20,6 @@
 #  version = "2.4.0"
 
 required = [
-    "github.com/leanovate/microtools/rest",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/yaml.v2",
     "github.com/fatih/color",
@@ -31,9 +30,16 @@ required = [
     "github.com/chzyer/readline",
     "gopkg.in/natefinch/npipe.v2",
     "github.com/nbutton23/zxcvbn-go",
-    "github.com/stretchr/testify",
-    "github.com/leanovate/gopter"
+    "github.com/stretchr/testify"
 ]
+
+[[constraint]]
+    name = "github.com/leanovate/microtools"
+    branch = "master"
+
+[[constraint]]
+    name = "github.com/leanovate/gopter"
+    branch = "master"
 
 [[constraint]]
     name = "golang.org/x/crypto"

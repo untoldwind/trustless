@@ -16,8 +16,8 @@ func (f *fixedSeed) Seed(seed int64) { f.fixed = seed }
 
 func TestGenParameters(t *testing.T) {
 	parameters := &gopter.GenParameters{
-		Size: 100,
-		Rng:  rand.New(&fixedSeed{}),
+		MaxSize: 100,
+		Rng:     rand.New(&fixedSeed{}),
 	}
 
 	if !parameters.NextBool() {
@@ -46,9 +46,18 @@ func TestGenParameters(t *testing.T) {
 		t.Error("Bool should be true")
 	}
 	if parameters.NextInt64() != -2 {
-		t.Error("int64 should be 1")
+		t.Error("int64 should be -2")
 	}
 	if parameters.NextUint64() != 6 {
 		t.Error("uint64 should be 6")
+	}
+
+	param1 := parameters.CloneWithSeed(1024)
+	param2 := parameters.CloneWithSeed(1024)
+
+	for i := 0; i < 100; i++ {
+		if param1.NextInt64() != param2.NextInt64() {
+			t.Error("cloned parameters create different random numbers")
+		}
 	}
 }
