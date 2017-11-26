@@ -56,6 +56,7 @@ func main() {
 			commands.UnlockCommand,
 			commands.ListCommand,
 			commands.ImportCommand,
+			commands.ExportCommand,
 			commands.EstimateCommand,
 			commands.GenerateCommand,
 			commands.DaemonCommand,
