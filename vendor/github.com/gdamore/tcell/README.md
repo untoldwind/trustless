@@ -6,6 +6,8 @@
 [![Gitter](https://img.shields.io/badge/gitter-join-brightgreen.svg)](https://gitter.im/gdamore/tcell)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/gdamore/tcell)
 [![Go Report Card](http://goreportcard.com/badge/gdamore/tcell)](http://goreportcard.com/report/gdamore/tcell)
+[![codecov](https://codecov.io/gh/gdamore/tcell/branch/master/graph/badge.svg)](https://codecov.io/gh/gdamore/tcell)
+
 
 > _Tcell is a work in progress (Gamma).
 > Please use with caution; interfaces may change in before final release.
@@ -24,6 +26,7 @@ ways.  It also adds substantial functionality beyond termbox.
 * mouse demo - [screenshot](http://2.bp.blogspot.com/-fWvW5opT0es/VhIdItdKqJI/AAAAAAAAATE/7Ojc0L1SpB0/s1600/Screen%2BShot%2B2015-10-04%2Bat%2B11.47.13%2BPM.png) - included mouse test
 * [gomatrix](https://github.com/gdamore/gomatrix) - converted from Termbox
 * [micro](https://github.com/zyedidia/micro/) - lightweight text editor with syntax-highlighting and themes
+* [godu](https://github.com/viktomas/godu) - simple golang utility helping to discover large files/folders.
 
 ## Pure Go Terminfo Database
 
@@ -35,7 +38,7 @@ when Go provides standard support for terminal handling via termio ioctls on
 all POSIX platforms.)  The database itself, while built using CGO, as well
 as the parser for it, is implemented in Pure Go.
 
-The database is also flexible & extensibel, and can modified by either running a
+The database is also flexible & extensible, and can modified by either running a
 program to build the database, or hand editing of simple JSON files.
 
 ## More Portable
@@ -227,8 +230,14 @@ and examine "physical" screen contents.
 ### Systems (Linux, FreeBSD, MacOS, Solaris, etc.)
 
 On POSIX systems, a POSIX termios implementation with /dev/tty is required.
-It also requires functional CGO to run.  As of this writing, CGO is available
-on all POSIX Go 1.5 platforms.
+On a small subset of these platforms (such as Solaris/illumos), we require
+cgo to run, in order to access termios.  (Note that Linux and BSD systems
+do not require CGO for most purposes.)
+
+(Note: CGO support is required if you wish to rebuild the terminal database
+from the system's native terminfo binary files.  This is because we use the
+system's native libterminfo to access that binary data.  We probably could
+eliminate that in the future by using a terminfo decompiler such as infocmp.)
 
 ### Windows
 
@@ -242,7 +251,7 @@ I haven't figured out how to cleanly resolve the dichotomy between cygwin
 style termios and the Windows Console API; it seems that perhaps nobody else
 has either.  If anyone has suggestions, let me know!  Really, if you're
 using a Windows application, you should use the native Windows console or a
-fully compatible consule implementation.  Hopefully the Windows 10 console
+fully compatible console implementation.  Hopefully the Windows 10 console
 is more functional in this regard.
 
 ### Plan9 and Native Client (Nacl)

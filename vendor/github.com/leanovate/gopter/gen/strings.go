@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"reflect"
 	"unicode"
 	"unicode/utf8"
 
@@ -30,10 +29,10 @@ func RuneNoControl() gopter.Gen {
 }
 
 func genRune(int64Gen gopter.Gen) gopter.Gen {
-	return int64Gen.Map(func(value int64) rune {
-		return rune(value)
-	}).SuchThat(func(v rune) bool {
-		return utf8.ValidRune(v)
+	return int64Gen.Map(func(value interface{}) interface{} {
+		return rune(value.(int64))
+	}).SuchThat(func(v interface{}) bool {
+		return utf8.ValidRune(v.(rune))
 	})
 }
 
@@ -60,38 +59,12 @@ func AlphaChar() gopter.Gen {
 	})
 }
 
-// AlphaNumChar generates arbitrary alpha-numeric character runes
+// AlphaNumChar generate arbitrary alpha-numeric character runes
 func AlphaNumChar() gopter.Gen {
 	return Frequency(map[int]gopter.Gen{
 		0: NumChar(),
 		9: AlphaChar(),
 	})
-}
-
-// UnicodeChar generates arbitrary character runes with a given unicode table
-func UnicodeChar(table *unicode.RangeTable) gopter.Gen {
-	if table == nil || len(table.R16)+len(table.R32) == 0 {
-		return Fail(reflect.TypeOf(rune('a')))
-	}
-	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		tableIdx := genParams.Rng.Intn(len(table.R16) + len(table.R32))
-
-		var selectedRune rune
-		if tableIdx < len(table.R16) {
-			r := table.R16[tableIdx]
-			runeOffset := uint16(genParams.Rng.Int63n(int64((r.Hi-r.Lo+1)/r.Stride))) * r.Stride
-			selectedRune = rune(runeOffset + r.Lo)
-		} else {
-			r := table.R32[tableIdx-len(table.R16)]
-			runeOffset := uint32(genParams.Rng.Int63n(int64((r.Hi-r.Lo+1)/r.Stride))) * r.Stride
-			selectedRune = rune(runeOffset + r.Lo)
-		}
-		genResult := gopter.NewGenResult(selectedRune, gopter.NoShrinker)
-		genResult.Sieve = func(v interface{}) bool {
-			return unicode.Is(table, v.(rune))
-		}
-		return genResult
-	}
 }
 
 // AnyString generates an arbitrary string
@@ -116,12 +89,14 @@ func Identifier() gopter.Gen {
 	return gopter.CombineGens(
 		AlphaLowerChar(),
 		SliceOf(AlphaNumChar()),
-	).Map(func(values []interface{}) string {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		first := values[0].(rune)
 		tail := values[1].([]rune)
 		result := make([]rune, 0, len(tail)+1)
 		return string(append(append(result, first), tail...))
-	}).SuchThat(func(str string) bool {
+	}).SuchThat(func(v interface{}) bool {
+		str := v.(string)
 		if len(str) < 1 || !unicode.IsLower(([]rune(str))[0]) {
 			return false
 		}
@@ -134,17 +109,9 @@ func Identifier() gopter.Gen {
 	}).WithShrinker(StringShrinker)
 }
 
-// UnicodeString generates an arbitrary string from a given
-// unicode table.
-func UnicodeString(table *unicode.RangeTable) gopter.Gen {
-	return genString(UnicodeChar(table), func(ch rune) bool {
-		return unicode.Is(table, ch)
-	})
-}
-
 func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
-	return SliceOf(runeGen).Map(runesToString).SuchThat(func(v string) bool {
-		for _, ch := range v {
+	return SliceOf(runeGen).Map(runesToString).SuchThat(func(v interface{}) bool {
+		for _, ch := range v.(string) {
 			if !runeSieve(ch) {
 				return false
 			}
@@ -153,6 +120,6 @@ func genString(runeGen gopter.Gen, runeSieve func(ch rune) bool) gopter.Gen {
 	}).WithShrinker(StringShrinker)
 }
 
-func runesToString(v []rune) string {
-	return string(v)
+func runesToString(v interface{}) interface{} {
+	return string(v.([]rune))
 }

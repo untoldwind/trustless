@@ -6,18 +6,8 @@ import (
 	"github.com/leanovate/gopter"
 )
 
-// Time generates an arbitrary time.Time within year [0, 9999]
+// Time generates an arbitrary time.Time
 func Time() gopter.Gen {
-	return func(genParams *gopter.GenParameters) *gopter.GenResult {
-		sec := genParams.Rng.Int63n(253402214400) // Ensure year in [0, 9999]
-		usec := genParams.Rng.Int63n(1000000000)
-
-		return gopter.NewGenResult(time.Unix(sec, usec), TimeShrinker)
-	}
-}
-
-// AnyTime generates an arbitrary time.Time struct (might be way out of bounds of any reason)
-func AnyTime() gopter.Gen {
 	return func(genParams *gopter.GenParameters) *gopter.GenResult {
 		sec := genParams.NextInt64()
 		usec := genParams.NextInt64()

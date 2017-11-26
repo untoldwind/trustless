@@ -2,7 +2,6 @@ package gopter
 
 import "reflect"
 
-// GenResult contains the result of a generator.
 type GenResult struct {
 	Labels     []string
 	Shrinker   Shrinker

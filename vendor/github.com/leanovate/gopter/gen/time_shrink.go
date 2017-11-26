@@ -11,17 +11,17 @@ func TimeShrinker(v interface{}) gopter.Shrink {
 	t := v.(time.Time)
 	sec := t.Unix()
 	nsec := int64(t.Nanosecond())
-	secShrink := uint64Shrink{
-		original: uint64(sec),
-		half:     uint64(sec),
+	secShrink := int64Shrink{
+		original: sec,
+		half:     sec,
 	}
-	nsecShrink := uint64Shrink{
-		original: uint64(nsec),
-		half:     uint64(nsec),
+	nsecShrink := int64Shrink{
+		original: nsec,
+		half:     nsec,
 	}
-	return gopter.Shrink(secShrink.Next).Map(func(v uint64) time.Time {
-		return time.Unix(int64(v), nsec)
-	}).Interleave(gopter.Shrink(nsecShrink.Next).Map(func(v uint64) time.Time {
-		return time.Unix(sec, int64(v))
+	return gopter.Shrink(secShrink.Next).Map(func(v interface{}) interface{} {
+		return time.Unix(v.(int64), nsec)
+	}).Interleave(gopter.Shrink(nsecShrink.Next).Map(func(v interface{}) interface{} {
+		return time.Unix(sec, v.(int64))
 	}))
 }

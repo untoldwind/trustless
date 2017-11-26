@@ -7,11 +7,13 @@ func Complex128Box(min, max complex128) gopter.Gen {
 	return gopter.CombineGens(
 		Float64Range(real(min), real(max)),
 		Float64Range(imag(min), imag(max)),
-	).Map(func(values []interface{}) complex128 {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		return complex(values[0].(float64), values[1].(float64))
-	}).SuchThat(func(v complex128) bool {
-		return real(v) >= real(min) && real(v) <= real(max) &&
-			imag(v) >= imag(min) && imag(v) <= imag(max)
+	}).SuchThat(func(v interface{}) bool {
+		c := v.(complex128)
+		return real(c) >= real(min) && real(c) <= real(max) &&
+			imag(c) >= imag(min) && imag(c) <= imag(max)
 	}).WithShrinker(Complex128Shrinker)
 }
 
@@ -20,7 +22,8 @@ func Complex128() gopter.Gen {
 	return gopter.CombineGens(
 		Float64(),
 		Float64(),
-	).Map(func(values []interface{}) complex128 {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		return complex(values[0].(float64), values[1].(float64))
 	}).WithShrinker(Complex128Shrinker)
 }
@@ -30,11 +33,13 @@ func Complex64Box(min, max complex64) gopter.Gen {
 	return gopter.CombineGens(
 		Float32Range(real(min), real(max)),
 		Float32Range(imag(min), imag(max)),
-	).Map(func(values []interface{}) complex64 {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		return complex(values[0].(float32), values[1].(float32))
-	}).SuchThat(func(v complex64) bool {
-		return real(v) >= real(min) && real(v) <= real(max) &&
-			imag(v) >= imag(min) && imag(v) <= imag(max)
+	}).SuchThat(func(v interface{}) bool {
+		c := v.(complex64)
+		return real(c) >= real(min) && real(c) <= real(max) &&
+			imag(c) >= imag(min) && imag(c) <= imag(max)
 	}).WithShrinker(Complex64Shrinker)
 }
 
@@ -43,7 +48,8 @@ func Complex64() gopter.Gen {
 	return gopter.CombineGens(
 		Float32(),
 		Float32(),
-	).Map(func(values []interface{}) complex64 {
+	).Map(func(v interface{}) interface{} {
+		values := v.([]interface{})
 		return complex(values[0].(float32), values[1].(float32))
 	}).WithShrinker(Complex64Shrinker)
 }

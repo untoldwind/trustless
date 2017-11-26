@@ -48,7 +48,11 @@ func TestPtrOfFoo(t *testing.T) {
 }
 
 func GenFoo() gopter.Gen {
-	return gen.SliceOfN(16, gen.Rune()).Map(func(v []rune) Foo {
-		return Foo(v)
+	return gen.SliceOfN(16, gen.Rune()).Map(func(v interface{}) interface{} {
+		asRunes, ok := v.([]rune)
+		if !ok {
+			panic("Oh craps")
+		}
+		return Foo(asRunes)
 	})
 }

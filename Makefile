@@ -67,11 +67,14 @@ bin.windows32:
 	@go build -ldflags "-s -w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-x86.exe github.com/untoldwind/trustless
 	@go build -ldflags "-s -w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-native-windows-x86.exe github.com/untoldwind/trustless/native
 
-glide.install:
-	@echo "--> glide install"
-	@go get github.com/Masterminds/glide
-	@go build -v -o bin/glide github.com/Masterminds/glide
-	@bin/glide install -v
+dep.install:
+	@echo "-> dep install"
+	@go get github.com/golang/dep/cmd/dep
+	@go build -v -o bin/dep github.com/golang/dep/cmd/dep
+
+dep.ensure: dep.install
+	@bin/dep ensure
+	@bin/dep prune
 
 release: cross
 	@echo "--> github-release"

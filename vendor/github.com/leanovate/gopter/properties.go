@@ -22,13 +22,11 @@ func NewProperties(parameters *TestParameters) *Properties {
 	}
 }
 
-// Property add/defines a property in a test.
 func (p *Properties) Property(name string, prop Prop) {
 	p.propNames = append(p.propNames, name)
 	p.props[name] = prop
 }
 
-// Run checks all definied propertiesand reports the result
 func (p *Properties) Run(reporter Reporter) bool {
 	success := true
 	for _, propName := range p.propNames {
@@ -44,8 +42,6 @@ func (p *Properties) Run(reporter Reporter) bool {
 	return success
 }
 
-// TestingRun checks all definied properties with a testing.T context.
-// This the preferred wait to run property tests as part of a go unit test.
 func (p *Properties) TestingRun(t *testing.T) {
 	if !p.Run(ConsoleReporter(true)) {
 		t.Fail()
