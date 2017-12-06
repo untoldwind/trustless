@@ -67,14 +67,15 @@ bin.windows32:
 	@go build -ldflags "-s -w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-windows-x86.exe github.com/untoldwind/trustless
 	@go build -ldflags "-s -w -X github.com/untoldwind/trustless/config.version=${VERSION}" -v -o bin/trustless-native-windows-x86.exe github.com/untoldwind/trustless/native
 
-dep.install:
+bin/dep:
 	@echo "-> dep install"
 	@go get github.com/golang/dep/cmd/dep
 	@go build -v -o bin/dep github.com/golang/dep/cmd/dep
 
-dep.ensure: dep.install
+dep.ensure: bin/dep
 	@bin/dep ensure
 	@bin/dep prune
+	@find vendor -name "*_test.go" -exec rm -f {} \;
 
 release: cross
 	@echo "--> github-release"
