@@ -1,5 +1,3 @@
-PKGS = ./api/... ./commands/... ./config/... ./daemon/... ./secrets/... ./store/... .
-
 VERSION ?= $(shell date -u +%Y%m%d.%H%M%S)
 
 all: export GOPATH=${PWD}/../../../..
@@ -19,12 +17,12 @@ install.local: all
 format: export GOPATH=${PWD}/../../../..
 format:
 	@echo "--> Running go fmt"
-	@go fmt ${PKGS}
+	@go fmt ./...
 
 test: export GOPATH=${PWD}/../../../..
 test:
 	@echo "--> Running tests"
-	@go test -v ${PKGS}
+	@go test -v ./...
 
 cross: bin.linux64 bin.macos bin.windows64 bin.windows32
 

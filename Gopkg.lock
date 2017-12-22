@@ -4,8 +4,8 @@
 [[projects]]
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
-  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
-  version = "v1.0.3"
+  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
+  version = "v1.0.4"
 
 [[projects]]
   name = "github.com/chzyer/readline"
@@ -26,6 +26,12 @@
   version = "v1.5.0"
 
 [[projects]]
+  name = "github.com/fsnotify/fsnotify"
+  packages = ["."]
+  revision = "629574ca2a5df945712d3079857300b5e4da0236"
+  version = "v1.4.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/gdamore/encoding"
   packages = ["."]
@@ -39,16 +45,28 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/hashicorp/hcl"
+  packages = [".","hcl/ast","hcl/parser","hcl/printer","hcl/scanner","hcl/strconv","hcl/token","json/parser","json/scanner","json/token"]
+  revision = "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8"
+
+[[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
+  branch = "master"
   name = "github.com/junegunn/fzf"
   packages = ["src","src/algo","src/tui","src/util"]
   revision = "6db1136a6cd9e4054a5b723e7ba4fc16645980c7"
   source = "github.com/untoldwind/fzf"
 
 [[projects]]
-  branch = "master"
   name = "github.com/leanovate/gopter"
   packages = [".","gen","prop"]
-  revision = "bc22a5c65d130b2f63f3572121ec03117d060039"
+  revision = "ed879adfa983372d181640d83cbb2851480335d4"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -61,6 +79,12 @@
   name = "github.com/lucasb-eyer/go-colorful"
   packages = ["."]
   revision = "231272389856c976b7500c4fffcc52ddf06ff4eb"
+
+[[projects]]
+  name = "github.com/magiconair/properties"
+  packages = ["."]
+  revision = "d419a98cdbed11a922bf76f257b7c4be79b50e73"
+  version = "v1.7.4"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -87,10 +111,28 @@
   version = "v1.0.3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/go-homedir"
+  packages = ["."]
+  revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "06020f85339e21b2478f756a78e295255ffa4d6a"
+
+[[projects]]
   name = "github.com/nbutton23/zxcvbn-go"
   packages = [".","adjacency","data","entropy","frequency","match","matching","scoring","utils/math"]
   revision = "eafdab6b0663b4b528c35975c8b0e78be6e25261"
   version = "v0.1"
+
+[[projects]]
+  name = "github.com/pelletier/go-toml"
+  packages = ["."]
+  revision = "16398bac157da96aa88f98a2df640c7f32af1da2"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -109,6 +151,42 @@
   name = "github.com/shibukawa/configdir"
   packages = ["."]
   revision = "e180dbdc8da04c4fa04272e875ce64949f38bd3e"
+
+[[projects]]
+  name = "github.com/spf13/afero"
+  packages = [".","mem"]
+  revision = "8d919cbe7e2627e417f3e45c3c0e489a5b7e2536"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/spf13/cast"
+  packages = ["."]
+  revision = "acbeb36b902d72a7a4c18e8f3241075e7ab763e4"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "ccaecb155a2177302cb56cae929251a256d0f646"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/spf13/jwalterweatherman"
+  packages = ["."]
+  revision = "12bd96e66386c1960ab0f74ced1362f66f552f7b"
+
+[[projects]]
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/spf13/viper"
+  packages = ["."]
+  revision = "1a0c4a370c3e8286b835467d2dfcdaf636c3538b"
 
 [[projects]]
   branch = "master"
@@ -139,25 +217,19 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "4ff8c001ce4cc464e644b922325097228fce14d8"
+  revision = "83801418e1b59fb1880e363299581ee543af32ca"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["encoding","encoding/charmap","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","internal/gen","transform","unicode/cldr"]
-  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
+  packages = ["encoding","encoding/charmap","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
+  revision = "eb22672bea55af56d225d4e35405f4d2e9f062a0"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/natefinch/npipe.v2"
   packages = ["."]
   revision = "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6"
-
-[[projects]]
-  branch = "v2"
-  name = "gopkg.in/urfave/cli.v2"
-  packages = ["."]
-  revision = "b2bf3c5abeb90da407891aecd1df2c5a1f6170c1"
 
 [[projects]]
   branch = "v2"
@@ -168,6 +240,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bb8b712fab3a277cdd1d6bddc3697699edb9e7081098e31dd9903a1f4e1903a1"
+  inputs-digest = "de00c5a99265fdee9f186893b36168e6886ccefd602f83e6b47022edc9fc9783"
   solver-name = "gps-cdcl"
   solver-version = 1

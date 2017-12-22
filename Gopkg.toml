@@ -20,8 +20,8 @@
 #  version = "2.4.0"
 
 required = [
-    "gopkg.in/urfave/cli.v2",
-    "gopkg.in/yaml.v2",
+    "github.com/spf13/cobra",
+    "github.com/spf13/viper",
     "github.com/fatih/color",
     "github.com/shibukawa/configdir",
     "github.com/Sirupsen/logrus",
@@ -31,7 +31,8 @@ required = [
     "gopkg.in/natefinch/npipe.v2",
     "github.com/nbutton23/zxcvbn-go",
     "github.com/stretchr/testify",
-    "github.com/tobischo/gokeepasslib"
+    "github.com/tobischo/gokeepasslib",
+    "github.com/mitchellh/go-homedir",
 ]
 
 [[constraint]]
@@ -50,4 +51,12 @@ required = [
 [[constraint]]
     name = "github.com/junegunn/fzf"
     source = "github.com/untoldwind/fzf"
+    branch = "master"
+
+[[constraint]]
+    name =  "github.com/spf13/cobra"
+    branch = "master"
+
+[[constraint]]
+    name =  "github.com/spf13/viper"
     branch = "master"
