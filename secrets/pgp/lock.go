@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto"
 
+	"github.com/untoldwind/scrypt-go/scryptlib"
+
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/config"
@@ -16,7 +18,7 @@ import (
 func (s *pgpSecrets) Status(ctx context.Context) (*api.Status, error) {
 	if s.isLocked() {
 		return &api.Status{
-			Initialized: len(s.entities) > 0,
+			Initialized: len(s.identities) > 0,
 			Locked:      true,
 			Version:     config.Version(),
 		}, nil
@@ -64,16 +66,26 @@ func (s *pgpSecrets) Unlock(ctx context.Context, name, email, passphrase string)
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	ring, err := s.store.GetRing()
+	rawRing, err := s.store.GetRing()
 	if err != nil {
 		return err
 	}
-	if ring == nil {
-		ring, err = s.initializeRing(name, email, passphrase)
+	if rawRing == nil {
+		rawRing, err = s.initializeRing(name, email, passphrase)
 		if err != nil {
 			return err
 		}
 	}
+
+	ring := rawRing
+	if s.scrypted {
+		out := bytes.NewBuffer(nil)
+		if err := scryptlib.Decrypt([]byte(passphrase), bytes.NewBuffer(rawRing), out); err != nil {
+			return err
+		}
+		ring = out.Bytes()
+	}
+
 	entities, err := openpgp.ReadKeyRing(bytes.NewBuffer(ring))
 	if err != nil {
 		return errors.Wrap(err, "Failed to read ring")
@@ -148,12 +160,29 @@ func (s *pgpSecrets) initializeRing(name, email, passphrase string) ([]byte, err
 	if err := entity.SerializePrivate(buf, config); err != nil {
 		return nil, errors.Wrap(err, "Failed to serialize entity")
 	}
+	publicBuf := bytes.NewBuffer(nil)
+	if err := entity.Serialize(publicBuf); err != nil {
+		return nil, errors.Wrap(err, "Failed to serialize entity")
+	}
 	ring := buf.Bytes()
+	rawRing := ring
+
+	if s.scrypted {
+		out := bytes.NewBuffer(nil)
+		if err := scryptlib.Encrypt([]byte(passphrase), bytes.NewBuffer(ring), out); err != nil {
+			return nil, err
+		}
+		rawRing = out.Bytes()
+	}
+
 	s.purgePrivateKey(entity.PrivateKey)
 
-	if err := s.store.StoreRing(ring); err != nil {
+	if err := s.store.StorePublicRing(publicBuf.Bytes()); err != nil {
+		return nil, err
+	}
+	if err := s.store.StoreRing(rawRing); err != nil {
 		return nil, err
 	}
 
-	return ring, nil
+	return rawRing, nil
 }

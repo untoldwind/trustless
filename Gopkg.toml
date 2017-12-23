@@ -33,6 +33,7 @@ required = [
     "github.com/stretchr/testify",
     "github.com/tobischo/gokeepasslib",
     "github.com/mitchellh/go-homedir",
+    "github.com/untoldwind/scrypt-go",
 ]
 
 [[constraint]]

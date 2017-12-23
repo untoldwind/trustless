@@ -208,8 +208,14 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/untoldwind/scrypt-go"
+  packages = [".","commands","config","scryptlib"]
+  revision = "71695c6edc36277a0a4ee8f1c569207f956d01e5"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["cast5","openpgp","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","ssh/terminal"]
+  packages = ["cast5","openpgp","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","pbkdf2","scrypt","ssh/terminal"]
   revision = "6217826bd297ae6dcdc999a87063952c037bc67e"
   source = "github.com/untoldwind/crypto"
 
@@ -233,6 +239,12 @@
 
 [[projects]]
   branch = "v2"
+  name = "gopkg.in/urfave/cli.v2"
+  packages = ["."]
+  revision = "b2bf3c5abeb90da407891aecd1df2c5a1f6170c1"
+
+[[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
@@ -240,6 +252,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "de00c5a99265fdee9f186893b36168e6886ccefd602f83e6b47022edc9fc9783"
+  inputs-digest = "49e9d93870e1f4e5c6598f3093831673e0b8aaa6efbbd65131b42053c26d7bb9"
   solver-name = "gps-cdcl"
   solver-version = 1

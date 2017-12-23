@@ -10,6 +10,7 @@ type CmdSettings struct {
 	UnlockTimeout     time.Duration `mapstructure:"unlock-timeout"`
 	UnlockTimeoutHard bool          `mapstructure:"unlock-timeout-hard"`
 	StoreURL          string        `mapstructure:"store-url"`
+	StoreScheme       string        `mapstructure:"store-scheme"`
 }
 
 var cmdSettings = CmdSettings{}

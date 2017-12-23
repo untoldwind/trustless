@@ -3,18 +3,18 @@ package pgp
 import (
 	"context"
 
+	"golang.org/x/crypto/openpgp"
+
 	"github.com/untoldwind/trustless/api"
 )
 
 func (s *pgpSecrets) Identities(ctx context.Context) ([]api.Identity, error) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
+	return s.identities, nil
+}
 
-	result := make([]api.Identity, 0, len(s.entities))
-	for _, entity := range s.entities {
-		if entity.PrivateKey == nil {
-			continue
-		}
+func identitiesFromEntities(entities openpgp.EntityList) []api.Identity {
+	result := make([]api.Identity, 0, len(entities))
+	for _, entity := range entities {
 		for _, identity := range entity.Identities {
 			result = append(result, api.Identity{
 				Name:  identity.UserId.Name,
@@ -22,5 +22,5 @@ func (s *pgpSecrets) Identities(ctx context.Context) ([]api.Identity, error) {
 			})
 		}
 	}
-	return result, nil
+	return result
 }

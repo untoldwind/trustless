@@ -18,6 +18,11 @@ type Store interface {
 	// StoreRing stores the key ring of the store
 	StoreRing(raw []byte) error
 
+	// GetPublicRing receives the public key ring of the store
+	GetPublicRing() ([]byte, error)
+	// StorePublicRing stores the public key ring of the store
+	StorePublicRing(raw []byte) error
+
 	// ChangeLogs retrieves the change logs of all nodes
 	ChangeLogs() ([]model.ChangeLog, error)
 

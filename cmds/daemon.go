@@ -17,7 +17,12 @@ var daemonCmd = &cobra.Command{
 func startDaemon(cmd *cobra.Command, args []string) error {
 	logger := createLogger()
 
-	secrets, err := pgp.NewPGPSecrets(cmdSettings.StoreURL, cmdSettings.NodeID, 4096, cmdSettings.UnlockTimeout, cmdSettings.UnlockTimeoutHard, logger)
+	scrypted := false
+	switch cmdSettings.StoreScheme {
+	case "openpgp+scrypt":
+		scrypted = true
+	}
+	secrets, err := pgp.NewPGPSecrets(cmdSettings.StoreURL, scrypted, cmdSettings.NodeID, 4096, cmdSettings.UnlockTimeout, cmdSettings.UnlockTimeoutHard, logger)
 	if err != nil {
 		return err
 	}

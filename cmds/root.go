@@ -36,6 +36,7 @@ func init() {
 	rootCommand.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default ./trustless.toml, $HOME/.trustless/trustless.toml")
 	rootCommand.PersistentFlags().String("node-id", "", "ID of this node")
 	rootCommand.PersistentFlags().String("store-url", "", "URL of the store to open (only file:// URLs are supported)")
+	rootCommand.PersistentFlags().String("store-scheme", "openpgp", "Storage scheme (openpgp, openpgp+scrypt)")
 	rootCommand.PersistentFlags().String("log-file", "", "Log to file instead stdout")
 	rootCommand.PersistentFlags().String("log-format", "text", "Log format to use (test, json, logstash)")
 	rootCommand.PersistentFlags().Bool("debug", false, "Enable debug information")
