@@ -24,7 +24,6 @@ required = [
     "github.com/spf13/viper",
     "github.com/fatih/color",
     "github.com/shibukawa/configdir",
-    "github.com/Sirupsen/logrus",
     "github.com/pkg/errors",
     "github.com/mattn/go-colorable",
     "github.com/chzyer/readline",

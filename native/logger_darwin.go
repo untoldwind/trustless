@@ -16,10 +16,10 @@ func createLogger() logging.Logger {
 		output = os.Stdout
 	}
 	loggingOptions := logging.Options{
-		Backend: "logrus",
+		Backend: "simple",
 		Output:  output,
 		Level:   logging.Info,
 	}
-	return logging.NewLogrusLogger(loggingOptions).
+	return logging.NewLogger(loggingOptions).
 		WithContext(map[string]interface{}{"process": "trustless-native", "version": config.Version()})
 }

@@ -1,20 +1,19 @@
-PACKAGES= ./logging/... ./rest/... ./routing/...
 VERSION = $(shell date -u +.%Y%m%d.%H%M%S)
 
 all: export GOPATH=${PWD}/../../../..
 all: format
 	@echo "--> Running go build"
-	@go build ${PACKAGES}
+	@go build ./...
 
 format: export GOPATH=${PWD}/../../../..
 format:
 	@echo "--> Running go fmt"
-	@go fmt ${PACKAGES}
+	@go fmt ./...
 
 test: export GOPATH=${PWD}/../../../..
 test:
 	@echo "--> Running tests"
-	@go test -v ${PACKAGES}
+	@go test -v ./...
 
 coverage:
 	@echo "--> Running tests with coverage"
@@ -25,11 +24,15 @@ coverage:
   done
 	@rm .pkg.coverage
 
-glide.install:
-	@echo "--> glide install"
-	@go get github.com/Masterminds/glide
-	@go build -v -o bin/glide github.com/Masterminds/glide
-	@bin/glide install -v
+bin/dep:
+	@echo "-> dep install"
+	@go get github.com/golang/dep/cmd/dep
+	@go build -v -o bin/dep github.com/golang/dep/cmd/dep
+
+dep.ensure: bin/dep
+	@bin/dep ensure -v
+	@bin/dep prune -v
+	@find vendor -name "*_test.go" -exec rm -f {} \;
 
 #genmocks:
 #	@echo "--> Generate mocks"

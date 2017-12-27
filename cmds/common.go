@@ -41,7 +41,7 @@ func withDetailedErrors(action func(cmd *cobra.Command, args []string) error) fu
 
 func createLogger() logging.Logger {
 	loggingOptions := logging.Options{
-		Backend:   "logrus",
+		Backend:   "simple",
 		LogFile:   cmdSettings.LogFile,
 		LogFormat: cmdSettings.LogFormat,
 		Level:     logging.Info,
@@ -49,7 +49,7 @@ func createLogger() logging.Logger {
 	if cmdSettings.Debug {
 		loggingOptions.Level = logging.Debug
 	}
-	return logging.NewLogrusLogger(loggingOptions).
+	return logging.NewLogger(loggingOptions).
 		WithContext(map[string]interface{}{"process": "trustless", "version": config.Version()})
 }
 

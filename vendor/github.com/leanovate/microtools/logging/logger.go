@@ -83,20 +83,17 @@ func (o Options) GetOutput() io.Writer {
 
 // DefaultOptions common default options
 var DefaultOptions = &Options{
-	Backend: "logrus",
+	Backend: "simple",
 }
 
 // NewLogger configure a Logger implementation
 func NewLogger(options Options) Logger {
-	switch options.Backend {
-	case "simple":
-		return NewSimpleLogger(options)
-	case "null":
-		return NewSimpleLoggerNull()
+	if factory, ok := backends[options.Backend]; ok {
+		return factory(options)
 	}
-	return NewLogrusLogger(options)
+	return NewSimpleLogger(options)
 }
 
-type simpleStackTracer interface {
+type SimpleStackTracer interface {
 	ErrorStack() string
 }

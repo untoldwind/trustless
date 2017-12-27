@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
-  version = "v1.0.4"
-
-[[projects]]
   name = "github.com/chzyer/readline"
   packages = ["."]
   revision = "62c6fe6193755f722b8b8788aa7357be55a50ff1"
@@ -72,7 +66,7 @@
   branch = "master"
   name = "github.com/leanovate/microtools"
   packages = ["logging","rest","routing"]
-  revision = "e7b09151ef9cfe471dbf94bc048f3fcd6784fb9d"
+  revision = "ec6c570b0eae794fbb322c63403ecd66036ad85c"
 
 [[projects]]
   branch = "master"
@@ -229,7 +223,7 @@
   branch = "master"
   name = "golang.org/x/text"
   packages = ["encoding","encoding/charmap","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "eb22672bea55af56d225d4e35405f4d2e9f062a0"
+  revision = "e19ae1496984b1c655b8044a65c0300a3c878dd3"
 
 [[projects]]
   branch = "v2"
@@ -252,6 +246,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "49e9d93870e1f4e5c6598f3093831673e0b8aaa6efbbd65131b42053c26d7bb9"
+  inputs-digest = "65bed0036000111af7451646f4551f2ff300b1e591df22d735d523bc75e5b354"
   solver-name = "gps-cdcl"
   solver-version = 1
