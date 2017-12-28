@@ -2,3 +2,6 @@ bin/
 .data/
 *.iml
 .idea/
+build/src/
+build/pkg/
+build/trustless*.tar.xz
