@@ -6,15 +6,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/awnumar/memguard"
 	"github.com/chzyer/readline"
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/api"
 )
 
-func readPassphrase(prompt string) (string, error) {
+func readPassphrase(prompt string) (*memguard.LockedBuffer, error) {
 	rl, err := readline.NewEx(&readline.Config{Prompt: "", Stdout: os.Stderr})
 	if err != nil {
-		return "", errors.Wrap(err, "Failed to create readline")
+		return nil, errors.Wrap(err, "Failed to create readline")
 	}
 	defer rl.Close()
 
@@ -24,9 +25,9 @@ func readPassphrase(prompt string) (string, error) {
 
 	pwd, err := rl.ReadPasswordWithConfig(config)
 	if err != nil {
-		return "", errors.Wrap(err, "Failed to read passphrase")
+		return nil, errors.Wrap(err, "Failed to read passphrase")
 	}
-	return string(pwd), nil
+	return memguard.NewImmutableFromBytes(pwd)
 }
 
 func readInitialUnlock() (*api.MasterKeyUnlock, error) {

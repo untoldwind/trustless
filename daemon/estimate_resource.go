@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/awnumar/memguard"
 	"github.com/leanovate/microtools/rest"
 	"github.com/untoldwind/trustless/api"
 	"github.com/untoldwind/trustless/secrets"
@@ -32,6 +33,12 @@ func (r *EstimateResource) Post(request *http.Request) (interface{}, error) {
 	if err := decoder.Decode(&estimate); err != nil {
 		return nil, rest.HTTPBadRequest.WithDetails(err.Error())
 	}
+	locked, err := memguard.NewImmutableFromBytes([]byte(estimate.Password))
+	if err != nil {
+		return nil, err
+	}
+	defer locked.Destroy()
+	estimate.Password = string(locked.Buffer())
 
 	return r.secrets.EstimateStrength(request.Context(), estimate)
 }

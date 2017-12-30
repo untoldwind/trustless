@@ -58,10 +58,11 @@ func unlockStore(client secrets.Secrets) (*api.Status, error) {
 		fmt.Fprintf(os.Stderr, "Name : %s\n", identity.Name)
 		fmt.Fprintf(os.Stderr, "Email: %s\n", identity.Email)
 		passphrase, err := readPassphrase("Master Passphrase: ")
+		defer passphrase.Destroy()
 		if err != nil {
 			return nil, err
 		}
-		if err := client.Unlock(createClientContext(), identity.Name, identity.Email, passphrase); err != nil {
+		if err := client.Unlock(createClientContext(), identity.Name, identity.Email, string(passphrase.Buffer())); err != nil {
 			return nil, err
 		}
 	}

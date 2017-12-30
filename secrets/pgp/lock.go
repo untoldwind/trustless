@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto"
 
+	"github.com/awnumar/memguard"
+
 	"github.com/untoldwind/scrypt-go/scryptlib"
 
 	"github.com/pkg/errors"
@@ -51,12 +53,14 @@ func (s *pgpSecrets) Lock(ctx context.Context) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
+	s.preparePurge()
 	for _, entity := range s.entities {
 		s.purgePrivateKey(entity.PrivateKey)
 		for _, subKey := range entity.Subkeys {
 			s.purgePrivateKey(subKey.PrivateKey)
 		}
 	}
+	s.destroyBuffers()
 	s.autolocker.Cancel()
 	return nil
 }
@@ -95,9 +99,15 @@ func (s *pgpSecrets) Unlock(ctx context.Context, name, email, passphrase string)
 		if err := entity.PrivateKey.Decrypt([]byte(passphrase)); err != nil {
 			return errors.Wrap(err, "Unable to decrypt key")
 		}
+		if err := s.protectPrivateKey(entity.PrivateKey); err != nil {
+			return err
+		}
 		for _, subKey := range entity.Subkeys {
 			if err := subKey.PrivateKey.Decrypt([]byte(passphrase)); err != nil {
 				return errors.Wrap(err, "Unable to decrypt key")
+			}
+			if err := s.protectPrivateKey(subKey.PrivateKey); err != nil {
+				return err
 			}
 		}
 	}
@@ -168,11 +178,16 @@ func (s *pgpSecrets) initializeRing(name, email, passphrase string) ([]byte, err
 	rawRing := ring
 
 	if s.scrypted {
-		out := bytes.NewBuffer(nil)
+		buf, err := memguard.NewMutable(len(ring))
+		if err != nil {
+			return nil, err
+		}
+		defer buf.Destroy()
+		out := &writeTo{buffer: buf}
 		if err := scryptlib.Encrypt([]byte(passphrase), bytes.NewBuffer(ring), out); err != nil {
 			return nil, err
 		}
-		rawRing = out.Bytes()
+		rawRing = out.Result()
 	}
 
 	s.purgePrivateKey(entity.PrivateKey)

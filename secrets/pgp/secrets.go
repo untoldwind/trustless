@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/awnumar/memguard"
+
 	"github.com/leanovate/microtools/logging"
 	"github.com/pkg/errors"
 	"github.com/untoldwind/trustless/api"
@@ -24,6 +26,7 @@ type pgpSecrets struct {
 	index         *Index
 	masterKeyBits int
 	autolocker    *secrets.Autolocker
+	buffers       []*memguard.LockedBuffer
 }
 
 // NewPGPSecrets creats a new secrets store based on openpgp

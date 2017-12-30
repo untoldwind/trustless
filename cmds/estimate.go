@@ -22,9 +22,10 @@ func estimatePassword(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	defer password.Destroy()
 
 	result, err := client.EstimateStrength(context.Background(), api.PasswordEstimate{
-		Password: password,
+		Password: string(password.Buffer()),
 	})
 
 	fmt.Printf("Entropy  : %f\n", result.Entropy)

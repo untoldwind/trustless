@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/awnumar/memguard"
+
 	"github.com/leanovate/microtools/logging"
 	"github.com/leanovate/microtools/rest"
 	"github.com/untoldwind/trustless/api"
@@ -51,6 +53,12 @@ func (r *MasterKeyResource) Update(request *http.Request) (interface{}, error) {
 	if err := decoder.Decode(&unlock); err != nil {
 		return nil, rest.HTTPBadRequest.WithDetails(err.Error())
 	}
+	locked, err := memguard.NewImmutableFromBytes([]byte(unlock.Passphrase))
+	if err != nil {
+		return nil, err
+	}
+	defer locked.Destroy()
+	unlock.Passphrase = string(locked.Buffer())
 	if err := r.secrets.Unlock(request.Context(), unlock.Name, unlock.Email, unlock.Passphrase); err != nil {
 		return nil, rest.HTTPInternalServerError(err)
 	}

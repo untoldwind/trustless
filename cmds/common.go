@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
+
+	"github.com/awnumar/memguard"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
@@ -35,7 +38,9 @@ func withDetailedErrors(action func(cmd *cobra.Command, args []string) error) fu
 		err := action(cmd, args)
 		if err != nil {
 			showError(err)
+			memguard.SafeExit(1)
 		}
+		memguard.SafeExit(0)
 	}
 }
 
@@ -74,6 +79,8 @@ func handleSignals(logger logging.Logger) error {
 		if sig == os.Interrupt || sig == syscall.SIGTERM {
 			shutdown = true
 		}
+		fmt.Println("GC")
+		runtime.GC()
 
 		if shutdown {
 			return nil

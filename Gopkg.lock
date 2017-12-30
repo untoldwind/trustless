@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/awnumar/memguard"
+  packages = [".","memcall"]
+  revision = "b482b0c828e2eeecbfebb05ca965c8d571afaeff"
+  version = "v0.13.2"
+
+[[projects]]
   name = "github.com/chzyer/readline"
   packages = ["."]
   revision = "62c6fe6193755f722b8b8788aa7357be55a50ff1"
@@ -216,7 +222,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = ["unix","windows"]
   revision = "83801418e1b59fb1880e363299581ee543af32ca"
 
 [[projects]]
@@ -246,6 +252,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "65bed0036000111af7451646f4551f2ff300b1e591df22d735d523bc75e5b354"
+  inputs-digest = "fdb717785de77d69ee7fc0e69605c1b2be1f4bebce5aa92311001f751dcc273f"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -14,7 +14,7 @@ import (
 
 func TestStore(t *testing.T) {
 	require := require.New(t)
-	logger := logging.NewSimpleLoggerNull()
+	logger := logging.NewSimpleLoggerNull(logging.Options{})
 
 	tempDir, err := ioutil.TempDir(os.TempDir(), "store_test")
 	require.Nil(err)

@@ -12,7 +12,7 @@ import (
 
 func TestServiceResource(t *testing.T) {
 	require := require.New(t)
-	resource := daemon.NewRootResource(nil, logging.NewSimpleLoggerNull())
+	resource := daemon.NewRootResource(nil, logging.NewSimpleLoggerNull(logging.Options{}))
 
 	request, _ := http.NewRequest("GET", "/", nil)
 

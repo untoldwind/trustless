@@ -15,12 +15,12 @@ import (
 
 func TestSecrets(t *testing.T) {
 	require := require.New(t)
-	logger := logging.NewSimpleLoggerNull()
+	logger := logging.NewSimpleLoggerNull(logging.Options{})
 
 	tempDir, err := ioutil.TempDir(os.TempDir(), "secrets_test")
 	require.Nil(err)
 
-	secrets, err := pgp.NewPGPSecrets("file://"+tempDir, "test-client", 1024, 5*time.Minute, false, logger)
+	secrets, err := pgp.NewPGPSecrets("file://"+tempDir, false, "test-client", 1024, 5*time.Minute, false, logger)
 	require.Nil(err)
 
 	status, err := secrets.Status(context.Background())

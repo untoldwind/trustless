@@ -20,14 +20,14 @@ import (
 
 func TestCrypt(t *testing.T) {
 	require := require.New(t)
-	logger := logging.NewSimpleLoggerNull()
+	logger := logging.NewSimpleLoggerNull(logging.Options{})
 
 	tempDir, err := ioutil.TempDir(os.TempDir(), "secrets_test")
 	require.Nil(err)
 
 	parameters := gopter.DefaultTestParameters()
 
-	_secrets, err := NewPGPSecrets("file://"+tempDir, "testNode", 1024, 5*time.Minute, false, logger)
+	_secrets, err := NewPGPSecrets("file://"+tempDir, false, "testNode", 1024, 5*time.Minute, false, logger)
 	require.Nil(err)
 	pgpSecrets := _secrets.(*pgpSecrets)
 
