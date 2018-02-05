@@ -1,6 +1,6 @@
 pkgname=trustless
 pkgver=1.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Console password manager & daemon"
 arch=('x86_64')
 url="http://github.com/untoldwind/trustless"
@@ -9,6 +9,8 @@ makedepends=('go')
 
 build() {
     VERSION="$pkgver-$pkgrel"
+    test -e "$PWD/src/github.com/untoldwind" && rm -rf "$PWD/src/github.com/21runtoldwinde"
+    test -e "$PWD/pkg" && rm -rf "$PWD/pkg"
     mkdir -p "$PWD/src/github.com/untoldwind"
     mkdir -p "$PWD/pkg"
     ln -s "$PWD/../.." "$PWD/src/github.com/untoldwind/trustless"

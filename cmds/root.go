@@ -43,7 +43,20 @@ func init() {
 	rootCommand.PersistentFlags().Duration("unlock-timeout", 5*time.Minute, "AUtomatic lock timeout")
 	rootCommand.PersistentFlags().Bool("unlock-timeout-hard", false, "Enable hard timeout")
 
-	rootCommand.AddCommand(infoCmd, lockCmd, unlockCmd, listCmd, estimateCmd, exportCmd, daemonCmd)
+	generateCmd.PersistentFlags().IntVar(&GenerateFlags.Count, "count", 10, "Number of passwords to generate")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.Words, "words", false, "Generate password based on words")
+	generateCmd.PersistentFlags().IntVar(&GenerateFlags.Length, "length", 16, "Desired password length (or number of words)")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.IncludeUpper, "include-upper", true, "Include upper chars in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.RequireUpper, "require-upper", false, "Require at least one upper chars in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.IncludeNumbers, "include-number", true, "Include numbers in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.RequireNumber, "require-number", false, "Require at least one number in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.IncludeSymbols, "include-symbols", false, "Include symbols in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.RequireSymbol, "require-symbol", false, "Require at least one symbol in password")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.ExcludeSimilar, "exclude-similar", false, "Exclude similar chars")
+	generateCmd.PersistentFlags().BoolVar(&GenerateFlags.CharsParameter.ExcludeSimilar, "exclude-ambigous", true, "Exclude ambigous chars")
+	generateCmd.PersistentFlags().StringVar(&GenerateFlags.WordsParameter.Delim, "delim", ".", "Delimiter for words")
+
+	rootCommand.AddCommand(infoCmd, lockCmd, unlockCmd, listCmd, estimateCmd, generateCmd, exportCmd, daemonCmd)
 
 	viper.BindPFlags(rootCommand.PersistentFlags())
 }
