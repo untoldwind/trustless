@@ -9,7 +9,7 @@ makedepends=('go')
 
 build() {
     VERSION="$pkgver-$pkgrel"
-    test -e "$PWD/src/github.com/untoldwind" && rm -rf "$PWD/src/github.com/21runtoldwinde"
+    test -e "$PWD/src/github.com/untoldwind" && rm -rf "$PWD/src/github.com/untoldwind"
     test -e "$PWD/pkg" && rm -rf "$PWD/pkg"
     mkdir -p "$PWD/src/github.com/untoldwind"
     mkdir -p "$PWD/pkg"
