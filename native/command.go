@@ -58,7 +58,7 @@ type GetOTPArgs struct {
 }
 
 type GetOTPReply struct {
-	UserCode string `json:"userCode`
+	UserCode string `json:"userCode"`
 	ValidFor int64  `json:"validFor"`
 }
 

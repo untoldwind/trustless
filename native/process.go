@@ -61,11 +61,11 @@ func process(command *Command, secrets secrets.Secrets, logger logging.Logger) (
 		if err != nil {
 			return nil, err
 		}
-		otpUrl, ok := secret.Current.Properties[api.PropertyTOTPUrl.Name]
+		otpURL, ok := secret.Current.Properties[api.PropertyTOTPUrl.Name]
 		if !ok {
 			return nil, errors.Errorf("No OTP url")
 		}
-		otp, err := otp.ParseURL(otpUrl)
+		otp, err := otp.ParseURL(otpURL)
 		if err != nil {
 			return nil, err
 		}

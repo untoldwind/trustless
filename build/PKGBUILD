@@ -24,4 +24,7 @@ package() {
 
     mkdir -p "$pkgdir/usr/lib/systemd/user"
     cp "$PWD/../trustless.service" "$pkgdir/usr/lib/systemd/user"
+
+    mkdir -p "$pkgdir/usr/lib/mozilla/native-messaging-hosts"
+    cp "$PWD/../trustless.firefox.json" "$pkgdir/usr/lib/mozilla/native-messaging-hosts/trustless.json"
 }

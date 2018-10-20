@@ -1,0 +1,7 @@
+{
+  "name": "trustless",
+  "description": "Trustless",
+  "path": "/usr/bin/trustless-native",
+  "type": "stdio",
+  "allowed_extensions": [ "trustless@untoldwind.github.io" ]
+}
